@@ -1,0 +1,41 @@
+{
+  "transactions": [
+    {
+      "amount": 14,
+      "date": "2024-12-06T01:37:48.015Z",
+      "id": "dd038bd10",
+      "transactionType": "deposito"
+    },
+    {
+      "amount": 12,
+      "date": "2024-10-23T23:47:23.013Z",
+      "id": "5546d9a8c",
+      "transactionType": "deposito"
+    },
+    {
+      "amount": 1800,
+      "date": "2024-10-23T23:47:23.013Z",
+      "id": "b6d3c9c3c",
+      "transactionType": "pix"
+    },
+    {
+      "amount": 1001,
+      "date": "2024-11-01T01:53:36.370Z",
+      "id": "0ba5c11ec",
+      "transactionType": "debito"
+    },
+    {
+      "amount": 2410,
+      "date": "2024-12-06T02:07:49.853Z",
+      "transactionType": "deposito",
+      "id": "a68c3d5c5"
+    },
+    {
+      "transaction": "",
+      "amount": 1500,
+      "date": "2024-12-06T02:10:44.986Z",
+      "transactionType": "deposito",
+      "id": "c51f27289"
+    }
+  ]
+}
