@@ -1,0 +1,9 @@
+services:
+  shell:
+    build: ./shell
+    ports:
+      - "3000:3000"
+  mfe:
+    build: ./mfe
+    ports:
+      - "3001:3001"
