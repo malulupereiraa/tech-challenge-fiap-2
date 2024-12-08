@@ -3,7 +3,9 @@ services:
     build: ./shell
     ports:
       - "3000:3000"
+    environment:
+      - REMOTE_NEXT_APP_URL=http://localhost:4000
   mfe:
     build: ./mfe
     ports:
-      - "3001:3001"
+      - "4000:3001"
