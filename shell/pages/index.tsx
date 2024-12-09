@@ -4,31 +4,27 @@ import { Container } from "react-bootstrap";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import StyledComponentsRegistry from "../@core/lib/registry";
 import { StyledRoot } from "../@theme/styledRoot";
+import HomePage from "./page"
+import Loading from "./loading";
 
 const AppComponent = dynamic(() => import("remoteNextApp/app"), {  
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
-export default function Home({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>)  {
+export default function Home()  {
   return (
     <Container fluid>
       <AppRouterCacheProvider>
         <StyledComponentsRegistry>
           <StyledRoot>
-            <Suspense fallback={'123loading'}>
-              {children}
-              <React.Suspense fallback="Loading Remote Component...">
-                <div>
+            <Suspense fallback={<Loading />}>
+              <HomePage />
+                {/* <div>
                   Abaixo Renderizar o APP Remote
                 </div>
                 <div>
                   <AppComponent />
-                </div>
-              </React.Suspense>
+                </div> */}
             </Suspense>
           </StyledRoot>
         </StyledComponentsRegistry>
