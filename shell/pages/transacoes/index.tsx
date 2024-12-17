@@ -8,8 +8,8 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import StyledComponentsRegistry from "../../@core/lib/registry";
 import { StyledRoot } from "../../@theme/styledRoot";
 import Transacoes from "./page";
-import TransactionsHeader from "../../@core/components/ui/header-transactions/TransactionsHeader";
-import Menu from "../../@core/components/ui/menu/Menu";
+import TransactionsHeader from "../../@core/components/ui/Header-transactions/TransactionsHeader";
+import Menu from "../../@core/components/ui/Menu/Menu";
 
 export const metadata: Metadata = {
   title: "Bytebank - Transações",

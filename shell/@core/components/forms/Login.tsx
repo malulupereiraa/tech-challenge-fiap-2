@@ -11,7 +11,22 @@ import {
   LinkCustom,
 } from "../../../@theme/custom/FormStyles";
 
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import rootReducer from "../../../redux/root-reducer";
+import UserActionTypes from "../../../redux/user/action.types"
+import { loginUser, logoutUser } from "../../../redux/user/actions"
+
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmitAction }) => {
+
+ // Redux
+ const { currentUser } = useSelector((rootReducer) => rootReducer.userReducer);
+ const dispatch = useDispatch();
+
+//fim Redux
+
+
+
   const { Formik } = formik;
 
   const schema = yup.object().shape({
@@ -39,13 +54,29 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmitAction }) => {
           errors,
           dirty,
           isValid,
-        }) => (
+        }) => {
+          //Redux
+          const handleLoginClick = () => {
+            const userData = {
+              email: values.email,
+              password: values.password
+            };
+            
+            dispatch(loginUser(userData));
+           
+            console.log("A pessoa logada é: " + currentUser);
+            
+          };
+          //fim Redux
+          return(
           <Form
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit();
               if (onSubmitAction) {
+                handleLoginClick();
                 onSubmitAction(values);
+
               }
             }}
           >
@@ -103,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmitAction }) => {
             </Row>
             <RowCentered>
               <Col xs={12} sm={12} md={12} lg={12}>
-                <ButtonTCF
+                <ButtonTCF 
                   variant={"green"}
                   label={"Acessar"}
                   disabled={!(dirty && isValid)}
@@ -113,7 +144,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmitAction }) => {
               </Col>
             </RowCentered>
           </Form>
-        )}
+        )}}
       </Formik>
     </>
   );

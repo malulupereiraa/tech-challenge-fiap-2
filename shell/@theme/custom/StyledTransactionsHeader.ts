@@ -18,7 +18,7 @@ const StyledHeader = styled.div`
 
   .nameAvatarContainer {
     width: 300px;
-    max-width: 1920px;
+    max-width: 250px;
     height: 96px;
     display: flex;
     justify-content: flex-end;
@@ -26,6 +26,16 @@ const StyledHeader = styled.div`
     padding: 0 20px;
     color: #fff;
     gap: 25px;
+  }
+  .sairContainer {
+    width: 50px;
+    max-width: 150px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+    color: #fff;
+    margin-left: 25px;
   }
 
   #clientName {
