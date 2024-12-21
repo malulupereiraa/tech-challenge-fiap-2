@@ -10,9 +10,10 @@ import { useState } from "react";
 import LoginForm from "../../forms/Login";
 import ButtonTCF from "../../ui/Button";
 import { themed } from "@/@theme/themed";
-import { navigate } from "@/pages/actions";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter()
   const [isModalCadastroOpen, setIsModalCadastroOpen] =
     useState<boolean>(false);
   const [isModalLoginOpen, setIsModalLoginOpen] = useState<boolean>(false);
@@ -47,7 +48,7 @@ export default function Header() {
     // TODO: function Login Form
     if (Object.values(formData).indexOf("") === -1) {
       setIsModalLoginOpen(false);
-      navigate();
+      router.push("/home");
     }
   };
 
