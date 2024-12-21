@@ -36,6 +36,20 @@
       "date": "2024-12-06T02:10:44.986Z",
       "transactionType": "deposito",
       "id": "c51f27289"
+    },
+    {
+      "transaction": "",
+      "amount": 10,
+      "date": "2024-12-07T11:43:13.845Z",
+      "transactionType": "deposito",
+      "id": "21c9bef2e"
+    },
+    {
+      "transaction": "",
+      "amount": 50,
+      "date": "2024-12-07T11:43:53.033Z",
+      "transactionType": "debito",
+      "id": "a3cbdb97f"
     }
   ]
 }
