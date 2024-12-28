@@ -2,8 +2,6 @@
 import { dbCreateTransaction, dbListTransactions } from "@/@core/services/db_service";
 
 export default function teste(req: any, res: any) {
-    // console.log(req.method)
-    // console.log(res.status)
     if (req.method === "POST") {
         POST(res, req)
     } else if (req.method === "GET") {
@@ -19,21 +17,7 @@ export const GET = async (res: any) => {
 }
   
 export const POST = async (res: any, req: any) => {
-    // console.log(req)
-    // console.log(res)
-    // const transactionData = (req.body);
-    // console.log(123)
-    // console.log(transactionData)
     const data = (await JSON.parse(req.body));
     const id = await dbCreateTransaction(data);
-      
-  
-    // return new Response(JSON.stringify({ id }), {
-    //   headers: { 'Content-Type': 'application/json' },
-    //   status: 201
-    // });
-      
-    // const usuario = JSON.parse(req.body)
-    // usuarios.push(usuario)
     res.status(200).send(id)
   }

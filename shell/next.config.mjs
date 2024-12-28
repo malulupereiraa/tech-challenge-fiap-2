@@ -14,7 +14,7 @@ const nextConfig = {
   webpack(config, options) {
     const { isServer } = options;
     const remotes = {
-      remoteNextApp: 'remoteNextApp@http://localhost:3001/_next/static/chunks/remoteEntry.js',
+      remoteNextApp: 'remoteNextApp@http://localhost:3002/_next/static/chunks/remoteEntry.js',
     };
     const federatedConfig = {
       name: "host",

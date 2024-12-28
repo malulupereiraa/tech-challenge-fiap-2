@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Col, Container, Row } from "react-bootstrap";
@@ -10,13 +11,29 @@ import { useState } from "react";
 import LoginForm from "../../forms/Login";
 import ButtonTCF from "../../ui/Button";
 import { themed } from "@/@theme/themed";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Header() {
   const router = useRouter()
   const [isModalCadastroOpen, setIsModalCadastroOpen] =
     useState<boolean>(false);
   const [isModalLoginOpen, setIsModalLoginOpen] = useState<boolean>(false);
+  // const { data: session } = useSession();
+
+  // let auth: { isAuth: boolean; name: string | null; email: string | null } = {
+  //   isAuth: false,
+  //   name: null,
+  //   email: null,
+  // }
+
+  // if (session?.user) {
+  //   auth = {
+  //     isAuth: true,
+  //     name: session.user.name,
+  //     email: session.user.email,
+  //   }
+  // }
 
   const handleOpen = (type: string) => {
     switch (type) {
@@ -44,11 +61,23 @@ export default function Header() {
       setIsModalCadastroOpen(false);
   };
 
-  const handleLoginForm = (formData: any) => {
-    // TODO: function Login Form
+  const handleLoginForm = async (formData: any) => {
     if (Object.values(formData).indexOf("") === -1) {
-      setIsModalLoginOpen(false);
-      router.push("/home");
+      try {
+        const res = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false, 
+        })
+        if (res && !res.error) {
+          setIsModalLoginOpen(false);
+          router.push("/home");
+        } else {
+          console.log('deu errado');
+        }
+      } catch (error) {
+
+      }
     }
   };
 
