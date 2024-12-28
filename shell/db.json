@@ -71,6 +71,13 @@
       "date": "2024-12-28T11:16:44.283Z",
       "transactionType": "deposito",
       "id": "ee9a98759"
+    },
+    {
+      "transaction": "",
+      "amount": 12,
+      "date": "2024-12-28T22:41:10.724Z",
+      "transactionType": "ted",
+      "id": "84512068c"
     }
   ]
 }

@@ -45,9 +45,9 @@ export default function RootLayout() {
                     <div className="col-xs-12 col-sm-12 col-md-9 col-xl-10 py-3">
                       <StyledHome>
                         <Home />
-    
+                        <Graficos />
                       </StyledHome>
-                      <Graficos />
+                      
                     </div>
                   </Suspense>
 

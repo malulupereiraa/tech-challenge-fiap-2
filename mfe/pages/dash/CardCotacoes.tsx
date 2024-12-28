@@ -2,27 +2,40 @@ import { useEffect, useState } from "react";
 import ApexCharts from "react-apexcharts";
 
 const GraficoCotacao = () => {
-    const [dados, setDados] = useState([]);
     const [options, setOptions] = useState({});
-    const [series, setSeries] = useState<{ name: string; data: { x: Date; y: number }[] }[]>([]);
+    const [series, setSeries] = useState<{ name: string; data: { x: string; y: number }[] }[]>([]);
 
     useEffect(() => {
-        // Função para formatar os dados e preparar o gráfico
         const fetchDados = async () => {
             try {
-                // Simulando a chamada da API
-                const response = await fetch("https://economia.awesomeapi.com.br/json/daily/USD-BRL/60");
+                // Chamando a API
+                const response = await fetch("https://economia.awesomeapi.com.br/json/daily/USD-BRL/360");
                 const data = await response.json();
 
-                // Extraindo os dados e preparando para o gráfico
-                const graficoData = data.map((item: { timestamp: number; bid: string; }) => {
+                // Processando e agrupando os dados por mês
+                const groupedData: { [month: string]: number[] } = {};
+
+                data.forEach((item: { timestamp: number; bid: string }) => {
+                    const date = new Date(item.timestamp * 1000);
+                    const month = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`; // Formato: YYYY-MM
+
+                    if (!groupedData[month]) {
+                        groupedData[month] = [];
+                    }
+                    groupedData[month].push(parseFloat(item.bid));
+                });
+
+                // Calculando a média de cada mês
+                let graficoData = Object.entries(groupedData).map(([month, values]) => {
+                    const avg = values.reduce((acc, val) => acc + val, 0) / values.length;
                     return {
-                        x: new Date(item.timestamp * 1000),
-                        y: parseFloat(item.bid),
+                        x: month, // Agrupado por mês
+                        y: avg,
                     };
                 });
 
-                setDados(graficoData);
+                // Ordenando os meses do menor para o maior
+                graficoData = graficoData.sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
 
                 // Configurações do gráfico
                 setOptions({
@@ -34,20 +47,26 @@ const GraficoCotacao = () => {
                         },
                     },
                     xaxis: {
-                        type: "datetime", // Usando datetime no eixo X
+                        type: "category",
+                        title: {
+                            text: "Mês",
+                        },
                     },
                     yaxis: {
                         title: {
                             text: "Cotação USD/BRL",
                         },
+                        labels: {
+                            formatter: (value: number) => value.toFixed(2),
+                        },
                     },
                     title: {
-                        text: "Cotação do Dólar em Relação ao Real",
+                        text: "Cotação do Dólar (Agrupado por Mês)",
                         align: "left",
                     },
                 });
 
-                // Definindo os dados a serem exibidos no gráfico
+                // Atualizando a série de dados
                 setSeries([
                     {
                         name: "Dólar",
@@ -57,13 +76,13 @@ const GraficoCotacao = () => {
             } catch (error) {
                 console.error("Erro ao buscar dados:", error);
             }
-        };  
+        };
         fetchDados();
     }, []);
 
     return (
-        <div>
-            <ApexCharts options={options} series={series} type="line" width={1200} height={400} />
+        <div style={{ background: "#fff", padding: "20px", borderRadius: "5px"}}>
+            <ApexCharts options={options} series={series} type="line" width={1050} height={300} />
         </div>
     );
 };
