@@ -15,7 +15,7 @@ const StyledHome = styled(Row)`
     padding: 0px;
   }
 
-  .rowBalance, .rowCardTCF {
+  .rowBalance, .rowCardTCF .rowCotacoes {
   margin-bottom: 30px;
   
   }

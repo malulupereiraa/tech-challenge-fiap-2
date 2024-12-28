@@ -53,7 +53,6 @@ const PieChart = () => {
 
   return (
     <div>
-      <h2>Gráfico de Pizza</h2>
       <Chart options={options} series={chartData.series} type="pie" width="380" />
     </div>
   );

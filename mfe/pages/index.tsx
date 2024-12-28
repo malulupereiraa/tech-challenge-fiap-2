@@ -1,12 +1,25 @@
 import React from "react";
 import DonutChart from "./dash/DonutGraph";
 import BarChart from "./dash/BarGraph";
+import GraficoCotacao from "./dash/CardCotacoes";
 export default function Home() {
   return (
     <>
-      Olá! Eu sou o app NEXTJS remoto.
-      <DonutChart></DonutChart>
-      <BarChart></BarChart>
+      <div className="d-flex flex-row align-items-center">
+        <div style={{ width: "400px" }}>
+          <DonutChart></DonutChart>
+        </div>
+        <div style={{ width: "400px" }}>
+          <BarChart></BarChart>
+        </div>
+      </div>
+
+      <div className="d-flex flex-row align-items-center">
+        <div>
+          <GraficoCotacao />
+        </div>
+      </div>
+
     </>
   );
 }

@@ -10,6 +10,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import StyledComponentsRegistry from "../../@core/lib/registry";
 import { StyledRoot } from "../../@theme/styledRoot";
 import Home from "./page";
+import dynamic from 'next/dynamic';
 
 export const metadata: Metadata = {
   title: "Bytebank - Início",
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
+
+const Graficos = dynamic(() => import('remoteNextApp/app'), {
+  ssr: false,
+});
 
 export default function RootLayout() {
   return (
@@ -40,9 +45,13 @@ export default function RootLayout() {
                     <div className="col-xs-12 col-sm-12 col-md-9 col-xl-10 py-3">
                       <StyledHome>
                         <Home />
+    
                       </StyledHome>
+                      <Graficos />
                     </div>
                   </Suspense>
+
+
                 </Row>
               </Suspense>
             </StyledRoot>

@@ -11,6 +11,9 @@ import ToastTCF from "../../@core/components/Toast";
 import CardSaldoComponent from "../../@core/components/ui/CardSaldo/CardSaldo";
 import CardTCF from "../../@core/components/ui/Card";
 import TransacaoForm from "../../@core/components/forms/Transacao";
+import CardCotacoes from "@/@core/components/ui/CardCotacoes/CardCotacoes";
+import { AttachMoney, Euro, CurrencyPound, CurrencyFranc } from "@mui/icons-material";
+
 
 export default function Home() {
   const [valueToast, setShowToast] = useState<boolean>(false);
@@ -19,6 +22,54 @@ export default function Home() {
   const [toastTitle, setToastTitle] = useState<string>("");
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
+  const [cotas, setCotas] = useState<{ nome: string; moeda: string; cotacao: any; variacao: any }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCotacoes = async () => {
+      try {
+        const response = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,CHF-BRL");
+        const data = await response.json();
+        // https://economia.awesomeapi.com.br/json/daily/USD-BRL/90
+        const formatCurrency = (value: string) => {
+          return parseFloat(value)
+            .toFixed(2)
+            .replace('.', ',')
+            .toLocaleString();
+        };
+        setCotas([
+          { nome: "Dólar", moeda: "USD", cotacao: formatCurrency(data.USDBRL.ask), variacao: formatCurrency(data.USDBRL.varBid) },
+          { nome: "Euro", moeda: "EUR", cotacao: formatCurrency(data.EURBRL.ask), variacao: formatCurrency(data.EURBRL.varBid) },
+          { nome: "Libra", moeda: "GBP", cotacao: formatCurrency(data.GBPBRL.ask), variacao: formatCurrency(data.GBPBRL.varBid) },
+          { nome: "Franco Suiço", moeda: "CHF", cotacao: formatCurrency(data.CHFBRL.ask), variacao: formatCurrency(data.CHFBRL.varBid) },
+        ]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Erro ao buscar cotações:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchCotacoes();
+  }, []);
+
+
+  const getCurrencyIcon = (moeda: any) => {
+    switch (moeda) {
+      case "USD":
+        return <AttachMoney />;
+      case "EUR":
+        return <Euro />;
+      case "GBP":
+        return <CurrencyPound />;
+      case "CHF":
+        return <CurrencyFranc />;
+      default:
+        return null;
+    }
+  };
+
+
 
   const handleTransacaoForm = async (e: any, formData: any) => {
     await createTransaction(formData)
@@ -89,6 +140,34 @@ export default function Home() {
             />
           </Col>
         </Row>
+
+
+        <Row className="rowBalance mt-4">
+          <Col xs={12} sm={12} md={12} lg={12}>
+              <div className="d-flex gap-4">
+                {loading ? (
+                  <div>Carregando...</div>
+                ) : (
+                  cotas.map((cotacao, index) => (
+                    <CardCotacoes
+                      key={index}
+                      // moeda={cotacao.moeda}
+                      moeda={
+                        <span>
+                          {getCurrencyIcon(cotacao.moeda)}
+                        </span>
+                      }
+                      nome={cotacao.nome}
+                      cotacao={cotacao.cotacao}
+                      variacao={cotacao.variacao}
+                    />
+                  ))
+                )}
+              </div>
+          </Col>
+        </Row>
+
+
       </Col>
       <Col xs={12} sm={12} md={4} lg={4} xl={4}>
         <Row>

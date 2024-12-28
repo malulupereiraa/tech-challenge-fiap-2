@@ -56,8 +56,8 @@ const TransactionBarChart = () => {
         }));
 
         setChartData({
-          categories: allMonths, // Eixo X: meses
-          series, // Séries: valores por tipo de transação
+          categories: allMonths,
+          series,
         });
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
@@ -70,21 +70,44 @@ const TransactionBarChart = () => {
   const options = {
     chart: {
       type: "bar",
-      stacked: false, // Barras empilhadas 
+      stacked: false, // Barras empilhadas
+      toolbar: {
+        show: false, // Esconde o menu superior do gráfico
+      },
+      offsetX: 0,
+      offsetY: 0, 
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        barHeight: "80%", // Reduz a altura das barras
+      },
     },
     xaxis: {
       categories: chartData.categories,
       title: {
         text: "Mês",
       },
+      labels: {
+        rotate: -45, // Ajusta o ângulo das labels para economizar espaço
+        style: {
+          fontSize: "10px", // Reduz o tamanho da fonte
+        },
+      },
     },
     yaxis: {
       title: {
         text: "Valores Totais",
       },
+      labels: {
+        style: {
+          fontSize: "10px", // Reduz o tamanho da fonte
+        },
+      },
     },
     legend: {
       position: "top" as "top",
+      fontSize: "10px",
     },
     tooltip: {
       y: {
@@ -95,7 +118,6 @@ const TransactionBarChart = () => {
 
   return (
     <div>
-      <h2>Gráfico de Barra - Valores por Mês e Tipo de Transação</h2>
       <Chart options={options} series={chartData.series} type="bar" height="300" />
     </div>
   );
