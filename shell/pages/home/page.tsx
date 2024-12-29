@@ -35,7 +35,6 @@ export default function Home() {
       try {
         const response = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,CHF-BRL");
         const data = await response.json();
-        // https://economia.awesomeapi.com.br/json/daily/USD-BRL/90
         const formatCurrency = (value: string) => {
           return parseFloat(value)
             .toFixed(2)
@@ -149,7 +148,7 @@ export default function Home() {
 
         <Row className="rowBalance mt-4">
           <Col xs={12} sm={12} md={12} lg={12}>
-              <div className="d-flex gap-4">
+              <div className="d-flex flex-wrap gap-2">
                 {loading ? (
                   <div>Carregando...</div>
                 ) : (
