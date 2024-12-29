@@ -13,6 +13,7 @@ import CardTCF from "../../@core/components/ui/Card";
 import TransacaoForm from "../../@core/components/forms/Transacao";
 import CardCotacoes from "@/@core/components/ui/CardCotacoes/CardCotacoes";
 import { AttachMoney, Euro, CurrencyPound, CurrencyFranc } from "@mui/icons-material";
+import dynamic from "next/dynamic";
 
 
 export default function Home() {
@@ -24,6 +25,10 @@ export default function Home() {
   const [balance, setBalance] = useState(0);
   const [cotas, setCotas] = useState<{ nome: string; moeda: string; cotacao: any; variacao: any }[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const Graficos = dynamic(() => import('remoteNextApp/app'), {
+    ssr: false,
+  });
 
   useEffect(() => {
     const fetchCotacoes = async () => {
@@ -166,7 +171,12 @@ export default function Home() {
               </div>
           </Col>
         </Row>
-
+          
+       <Row className="rowCardTCF">
+          <Col xs={12} sm={12} md={12} lg={12}>
+              <Graficos />
+          </Col>
+        </Row> 
 
       </Col>
       <Col xs={12} sm={12} md={4} lg={4} xl={4}>

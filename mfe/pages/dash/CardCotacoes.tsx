@@ -9,7 +9,7 @@ const GraficoCotacao = () => {
         const fetchDados = async () => {
             try {
                 // Chamando a API
-                const response = await fetch("https://economia.awesomeapi.com.br/json/daily/USD-BRL/360");
+                const response = await fetch("https://economia.awesomeapi.com.br/json/daily/USD-BRL/120");
                 const data = await response.json();
 
                 // Processando e agrupando os dados por mês
@@ -53,6 +53,7 @@ const GraficoCotacao = () => {
                         },
                     },
                     yaxis: {
+                        
                         title: {
                             text: "Cotação USD/BRL",
                         },
@@ -60,6 +61,7 @@ const GraficoCotacao = () => {
                             formatter: (value: number) => value.toFixed(2),
                         },
                     },
+                    colors: ["#47A138"], 
                     title: {
                         text: "Cotação do Dólar (Agrupado por Mês)",
                         align: "left",
@@ -82,7 +84,7 @@ const GraficoCotacao = () => {
 
     return (
         <div style={{ background: "#fff", padding: "20px", borderRadius: "5px"}}>
-            <ApexCharts options={options} series={series} type="line" width={1050} height={300} />
+            <ApexCharts options={options} series={series} type="line" width={980} height={300} />
         </div>
     );
 };

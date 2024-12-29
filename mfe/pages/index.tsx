@@ -2,6 +2,8 @@ import React from "react";
 import DonutChart from "./dash/DonutGraph";
 import BarChart from "./dash/BarGraph";
 import GraficoCotacao from "./dash/CardCotacoes";
+import ExchangeChart from "./dash/ExchangeChart";
+import AreaChart from "./dash/AreaChart";
 export default function Home() {
   return (
     <>
@@ -15,8 +17,13 @@ export default function Home() {
       </div> */}
 
       <div className="d-flex flex-row align-items-center">
-        <div style={{ width: "1050px" }}>
+        <div>
           <GraficoCotacao />
+          {/* <ExchangeChart /> */}
+          <AreaChart />
+        </div>
+        <div>
+        
         </div>
       </div>
 
