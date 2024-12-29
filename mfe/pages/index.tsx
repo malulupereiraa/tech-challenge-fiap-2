@@ -16,14 +16,9 @@ export default function Home() {
         </div>
       </div> */}
 
-      <div className="d-flex flex-row align-items-center">
-        <div>
-          {/* <GraficoCotacao /> */}
-          {/* <ExchangeChart /> */}
+      <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
+        <div style={{ flex: "1 1 100%", maxWidth: "100%" }}>
           <AreaChart />
-        </div>
-        <div>
-        
         </div>
       </div>
 

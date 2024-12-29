@@ -8,7 +8,14 @@ const AreaChart = () => {
   const [chartData, setChartData] = useState<any>({
     series: [],
     options: {
-      chart: { type: "area" as const, zoom: { enabled: false } },
+      chart: {
+        type: "area" as const, zoom: { enabled: false }, toolbar: {
+          show: true,
+          tools: {
+            download: false
+          }
+        }
+      },
       xaxis: {
         type: "datetime",
         labels: { datetimeFormatter: { year: "yyyy", month: "MMM yyyy", day: "dd MMM" } },
@@ -26,10 +33,10 @@ const AreaChart = () => {
         style: { fontSize: "20px", fontWeight: "bold" },
       },
       dataLabels: {
-        enabled: false, // Desativa os data labels
+        enabled: false,
       },
     },
-    
+
   });
 
   const endpoints = {
@@ -61,17 +68,39 @@ const AreaChart = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{ width: "100%", maxWidth: "100%", backgroundColor: "#fff", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
       <Chart
-        style={{ background: "#fff", padding: "20px", borderRadius: "5px" }}
-        options={chartData.options}
+        options={{
+          ...chartData.options,
+          responsive: [
+            {
+              breakpoint: 768,
+              options: {
+                chart: { width: "100%" },
+                xaxis: { labels: { show: true } },
+                yaxis: { labels: { show: true } },
+                title: { style: { fontSize: "16px" } },
+              },
+            },
+            {
+              breakpoint: 480,
+              options: {
+                chart: { width: "100%" },
+                xaxis: { labels: { show: true, rotate: -45 } },
+                yaxis: { labels: { show: true } },
+                markers: { size: 2 },
+              },
+            },
+          ],
+        }}
         series={chartData.series}
         type="area"
-        width={1000}
+        width="100%"
         height={350}
       />
     </div>
   );
+
 };
 
 export default AreaChart;
