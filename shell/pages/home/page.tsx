@@ -147,35 +147,32 @@ export default function Home() {
 
 
         <Row className="rowBalance mt-4">
-          <Col xs={12} sm={12} md={12} lg={12}>
-              <div className="d-flex flex-wrap gap-2">
-                {loading ? (
-                  <div>Carregando...</div>
-                ) : (
-                  cotas.map((cotacao, index) => (
-                    <CardCotacoes
-                      key={index}
-                      // moeda={cotacao.moeda}
-                      moeda={
-                        <span>
-                          {getCurrencyIcon(cotacao.moeda)}
-                        </span>
-                      }
-                      nome={cotacao.nome}
-                      cotacao={cotacao.cotacao}
-                      variacao={cotacao.variacao}
-                    />
-                  ))
-                )}
-              </div>
+          <Col xs={12} sm={12} md={12} lg={12} xl={12}>
+            <div className="d-flex flex-wrap justify-content-center gap-3">
+              {loading ? (
+                <div>Carregando...</div>
+              ) : (
+                cotas.map((cotacao, index) => (
+                  <CardCotacoes
+                    key={index}
+                    moeda={<span>{getCurrencyIcon(cotacao.moeda)}</span>}
+                    nome={cotacao.nome}
+                    cotacao={cotacao.cotacao}
+                    variacao={cotacao.variacao}
+                  />
+                ))
+              )}
+            </div>
           </Col>
         </Row>
-          
-       <Row className="rowCardTCF">
+
+        <Graficos />
+{/*   
+        <Row className="rowCardTCF">
           <Col xs={12} sm={12} md={12} lg={12}>
-              <Graficos />
+            <Graficos />
           </Col>
-        </Row> 
+        </Row> */}
 
       </Col>
       <Col xs={12} sm={12} md={4} lg={4} xl={4}>

@@ -16,7 +16,6 @@ const CardCotacoes = ({ moeda, nome, cotacao, variacao }: CardCotacoesProps) => 
             <CardInfos>
                 <MoedaContainer>{moeda}</MoedaContainer>
                 <ContentInfo>
-
                     <TitleMoeda>{nome}</TitleMoeda>
                     <TitleValue>{`${cotacao}`}</TitleValue>
                 </ContentInfo>
@@ -38,8 +37,9 @@ const CardCotacoes = ({ moeda, nome, cotacao, variacao }: CardCotacoesProps) => 
                     width={250}
                     height={50}
                     className="rounded"
+                    style={{ width: "100%", height: "auto", maxWidth: "100%" }}
                 />
-                </div>
+            </div>
         </CardCotacoesContainer>
     );
 };
