@@ -18,7 +18,7 @@ export default function Home() {
 
       <div className="d-flex flex-row align-items-center">
         <div>
-          <GraficoCotacao />
+          {/* <GraficoCotacao /> */}
           {/* <ExchangeChart /> */}
           <AreaChart />
         </div>
