@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "next-auth";
 
 declare module "next-auth" {
   interface User {
+    result: any;
     email: string;
     name: string;
     access_token: string;

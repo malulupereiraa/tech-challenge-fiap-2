@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { dbCreateTransaction, dbListTransactions } from "@/@core/services/db_service";
 
-export default function teste(req: any, res: any) {
+export default async function teste(req: any, res: any) {
     if (req.method === "POST") {
         POST(res, req)
     } else if (req.method === "GET") {

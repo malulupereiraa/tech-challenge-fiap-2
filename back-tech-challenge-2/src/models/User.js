@@ -1,14 +1,31 @@
-class User {
-  constructor({ _id, username, email, password }) {
-    this.username = username
-    this.email = email
-    this.password = password
-    this.id = _id
-  }
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-  isValid() {
-    return this.username && this.email && this.password
-  }
-}
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = User
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = mongoose.model('User', userSchema);

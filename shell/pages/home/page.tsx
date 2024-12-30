@@ -11,6 +11,10 @@ import ToastTCF from "../../@core/components/Toast";
 import CardSaldoComponent from "../../@core/components/ui/CardSaldo/CardSaldo";
 import CardTCF from "../../@core/components/ui/Card";
 import TransacaoForm from "../../@core/components/forms/Transacao";
+import { jwtDecode } from "jwt-decode";
+import { useSession } from "next-auth/react";
+import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
+import transactionsService from "@/@core/services/api-node/transactions.service";
 
 export default function Home() {
   const [valueToast, setShowToast] = useState<boolean>(false);
@@ -19,9 +23,20 @@ export default function Home() {
   const [toastTitle, setToastTitle] = useState<string>("");
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
+  const axiosAuth = useAxiosAuth();
+  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
+  const axiosHookHandler: any = useAxiosAuth();
 
   const handleTransacaoForm = async (e: any, formData: any) => {
-    await createTransaction(formData)
+    const token: string = session?.user.result.token;
+    const user: any = jwtDecode(token);
+    const formattedFormData: any = {
+      ...formData,
+      userId: user.userId,
+      description: "Transação Realizada na Home",
+    };
+    await transactionsService
+      .createTransaction(axiosHookHandler, formattedFormData)
       .then(() => {
         setShowToast(true);
         setMessage("Transação Realizada com Sucesso");
@@ -34,14 +49,37 @@ export default function Home() {
       })
       .catch((error: any) => {
         setShowToast(true);
-        setMessage(error);
+        setMessage(error.response.data.message);
         setIcon("error");
         setToastTitle("Erro!");
         setTimeout(() => {
           setShowToast(false);
         }, 3000);
-        console.error(error);
+        console.error(error.response.data.message);
       });
+
+    // CÓDIGO DA FASE 1 - Para efeito comparativo
+    // await createTransaction(formData)
+    //   .then(() => {
+    //     setShowToast(true);
+    //     setMessage("Transação Realizada com Sucesso");
+    //     setIcon("success");
+    //     setToastTitle("Sucesso!");
+    //     setReloadStatement(true);
+    //     setTimeout(() => {
+    //       setShowToast(false);
+    //     }, 3000);
+    //   })
+    //   .catch((error: any) => {
+    //     setShowToast(true);
+    //     setMessage(error);
+    //     setIcon("error");
+    //     setToastTitle("Erro!");
+    //     setTimeout(() => {
+    //       setShowToast(false);
+    //     }, 3000);
+    //     console.error(error);
+    //   });
   };
 
   useEffect(() => {
@@ -49,11 +87,13 @@ export default function Home() {
   }, [reloadStatement]);
 
   const calculateBalance = (transactions: []) => {
+    if (transactions === undefined) return;
     setBalance((_) => {
       return transactions.reduce((sum, transaction: Transaction) => {
-        const amountMultiplier = transaction.transactionType == "deposito" ? 1 : -1;
+        const amountMultiplier =
+          transaction.transactionType == "deposito" ? 1 : -1;
 
-        return sum + (transaction.amount * amountMultiplier);
+        return sum + transaction.amount * amountMultiplier;
       }, 0);
     });
   };
@@ -70,7 +110,7 @@ export default function Home() {
         <Row className="rowBalance">
           <Col xs={12} sm={12} md={12} lg={12}>
             <CardSaldoComponent
-              name="Hermelinda"
+              name={session && session.user.result.username}
               balance={balance}
               showBalance={false}
             />

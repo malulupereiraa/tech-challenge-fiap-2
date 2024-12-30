@@ -26,8 +26,6 @@ export const authOptions : NextAuthOptions = {
       },
       
       authorize: async(credentials, req) => {
-        console.log(credentials)
-        console.log(456)
         // Include hidden values here
         if (!credentials) {
           return null;
@@ -36,19 +34,8 @@ export const authOptions : NextAuthOptions = {
           email: credentials.email,
           password: credentials.password,
         };
-        const formData = toFormData(data);
-        console.log(data)
         try {
-          console.log(`${process.env.NEXTAUTH_URL}/user/auth`)
-          // const res = await fetch(`${process.env.NEXTAUTH_URL}/user/auth`, {
-          //   method: 'POST',
-          //   body: formData,
-          //   headers: { 
-          //     "Content-Type": "application/x-www-form-urlencoded",
-          //   }
-          // });
-          const res = await axios.post(`${process.env.NEXTAUTH_URL}/user/auth`, data);
-          console.log(res.data);
+          const res: any = await axios.post(`${process.env.NEXTAUTH_URL}/api/users/login`, data);
           const resData = res.data;
           if (resData) {
             return resData;
@@ -74,8 +61,11 @@ export const authOptions : NextAuthOptions = {
       return {...token, ...user}
     },
     async session({ session, token, user }) {
-      console.log(session)
-      session.user = token as any ;
+      // console.log(session)
+      // console.log(token)
+      // sessionStorage.setItem('loggedUser', JSON.stringify(token))
+      session.user = token as any;
+      // console.log(session)
       return session;
     }
   }

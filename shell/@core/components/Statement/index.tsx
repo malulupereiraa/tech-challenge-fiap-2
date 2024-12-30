@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable import/no-anonymous-default-export */
+/* eslint-disable react/display-name */
 import Container from "./Container";
 import StatementItemProps from "../../props/statement/statement-item";
 import StatementSection from "./StatementSection";
@@ -44,10 +47,10 @@ export default ({ transactions, loading }: any) => {
       return [];
 
     if (filter == "positive")
-      return transactions.filter((transaction) => transaction.transactionType == "deposito");
+      return transactions.filter((transaction: any) => transaction.transactionType == "deposito");
 
     if (filter == "negative")
-      return transactions.filter((transaction) => transaction.transactionType != "deposito");
+      return transactions.filter((transaction: any) => transaction.transactionType != "deposito");
 
     return transactions;
   };

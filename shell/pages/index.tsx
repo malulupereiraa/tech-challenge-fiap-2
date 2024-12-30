@@ -6,7 +6,6 @@ import StyledComponentsRegistry from "../@core/lib/registry";
 import { StyledRoot } from "../@theme/styledRoot";
 import HomePage from "./page"
 import Loading from "./loading";
-import Provider from "@/@core/providers/session-provider";
 
 const AppComponent = dynamic(() => import("remoteNextApp/app"), {  
   ssr: false,
@@ -19,9 +18,7 @@ export default function Home()  {
         <StyledComponentsRegistry>
           <StyledRoot>
             <Suspense fallback={<Loading />}>
-              <Provider>
                 <HomePage />
-              </Provider>
                 {/* <div>
                   Abaixo Renderizar o APP Remote
                 </div>

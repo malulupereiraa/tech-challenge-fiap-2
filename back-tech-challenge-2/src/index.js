@@ -1,38 +1,33 @@
-const Express = require('express')
-const publicRoutes = require('./publicRoutes')
-const routes = require('./routes')
-const connectDB = require('./infra/mongoose/mongooseConect');
-const app = new Express()
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocs =  require('./swagger')
-const UserController = require('./controller/User')
-const cors = require('cors')
+const express = require('express');
+const connectDB = require('./config/db');
+const { swaggerUi, swaggerDocs } = require('./config/swagger');
+// const userRoutes = require('./routes/userRoutes');
+// const transactionRoutes = require('./routes/transactionRoutes');
+const generalRoutes = require('./routes/generalRoutes');
 
-app.use(Express.json())
+const app = express();
 
-app.use(cors({
-    origin: '*'
-}))
+// Middleware
+app.use(express.json());
 
-app.use(publicRoutes)
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.use((req, res, next) => {
-    if (req.url.includes('/docs')) {
-        return next();
-    }
-    const [_, token] = req.headers['authorization']?.split(' ') || []
-    const user = UserController.getToken(token)
-    if (!user) return res.status(401).json({ message: 'Token inválido' })
-    req.user = user
-    next()
-})
-app.use(routes)
+// Connect to database
+connectDB();
 
-connectDB().then(() => {
-    app.listen(3000, () => {
-        console.log('Servidor rodando na porta 3000');
-    });
-});
+const cors = require('cors');
+const corsOptions ={
+    origin:'http://localhost:3001', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 
+// Swagger setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-module.exports = app
+// Routes
+// app.use('/api/users', userRoutes);
+// app.use('/api/users/transactions', transactionRoutes);
+app.use('/api/users', generalRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Servidor Rodando na Porta: ${PORT}`));

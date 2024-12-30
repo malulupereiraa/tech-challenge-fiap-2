@@ -11,8 +11,11 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import StyledComponentsRegistry from "../../@core/lib/registry";
 import { StyledRoot } from "../../@theme/styledRoot";
 import Home from "./page";
-import { getServerSession } from "next-auth";
-import Provider from "@/@core/providers/session-provider";
+import { signOut, useSession } from "next-auth/react";
+import { Fab, Tooltip } from "@mui/material";
+import { FloatButton, FloatButtonRow } from "@/@theme/custom/FloatButton";
+import { IoIosLogOut } from "react-icons/io";
+import router from "next/router";
 
 export const metadata: Metadata = {
   title: "Bytebank - Início",
@@ -25,8 +28,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default function RootLayout() {
-  const session: any = getServerSession();
-  console.log(session)
+  const { data: session } = useSession();
+  console.log(session); // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+
+  const logout = () => {
+    router.push("/");
+    signOut({
+      redirect: false,
+    });
+  };
+
   return (
     <>
       <Container fluid>
@@ -34,8 +45,9 @@ export default function RootLayout() {
           <StyledComponentsRegistry>
             <StyledRoot>
               <Suspense fallback={<Loading />}>
-              <Provider>
-                <TransactionsHeader name={"Hermelinda"} />
+                <TransactionsHeader
+                  name={session && session.user.result.username}
+                />
                 <Row>
                   <div className="col-xs-12 col-sm-12 col-md-3 col-xl-2">
                     <div className="d-flex flex-column align-items-center align-items-sm-start h-100">
@@ -47,10 +59,21 @@ export default function RootLayout() {
                       <StyledHome>
                         <Home />
                       </StyledHome>
+                      <FloatButtonRow justify="end">
+                        <Tooltip title="Sair do Sistema">
+                          <Fab
+                            size="small"
+                            color="primary"
+                            aria-label="sign-out"
+                            onClick={logout}
+                          >
+                            <IoIosLogOut />
+                          </Fab>
+                        </Tooltip>
+                      </FloatButtonRow>
                     </div>
                   </Suspense>
                 </Row>
-              </Provider>
               </Suspense>
             </StyledRoot>
           </StyledComponentsRegistry>

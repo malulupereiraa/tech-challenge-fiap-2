@@ -13,27 +13,21 @@ import ButtonTCF from "../../ui/Button";
 import { themed } from "@/@theme/themed";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
+import ToastTCF from "../../Toast";
+import { jwtDecode } from "jwt-decode";
+import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 
 export default function Header() {
-  const router = useRouter()
+  const router = useRouter();
   const [isModalCadastroOpen, setIsModalCadastroOpen] =
     useState<boolean>(false);
   const [isModalLoginOpen, setIsModalLoginOpen] = useState<boolean>(false);
-  // const { data: session } = useSession();
-
-  // let auth: { isAuth: boolean; name: string | null; email: string | null } = {
-  //   isAuth: false,
-  //   name: null,
-  //   email: null,
-  // }
-
-  // if (session?.user) {
-  //   auth = {
-  //     isAuth: true,
-  //     name: session.user.name,
-  //     email: session.user.email,
-  //   }
-  // }
+  const [valueToast, setShowToast] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [icon, setIcon] = useState<any>("");
+  const [toastTitle, setToastTitle] = useState<string>("");
+  const axiosAuth = useAxiosAuth();
+  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
 
   const handleOpen = (type: string) => {
     switch (type) {
@@ -55,34 +49,78 @@ export default function Header() {
     }
   };
 
-  const handleCadastroForm = (formData: any) => {
+  const handleCadastroForm = async (formData: any) => {
     // TODO: function Cadastro Form
-    if (Object.values(formData).indexOf("") === -1)
-      setIsModalCadastroOpen(false);
+    if (Object.values(formData).indexOf("") === -1) {
+      const token: string = session?.user.result.token;
+      const user: any = jwtDecode(token);
+      console.log(formData);
+      const formattedFormData: any = {
+        // ...formData,
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+      };
+      await axiosAuth
+        .post(`/api/users`, formattedFormData)
+        .then(() => {
+          setShowToast(true);
+          setMessage("Usuário Cadastrado com Sucesso");
+          setIcon("success");
+          setToastTitle("Sucesso!");
+          setTimeout(() => {
+            setShowToast(false);
+          }, 3000);
+          setIsModalCadastroOpen(false);
+        })
+        .catch((error: any) => {
+          setShowToast(true);
+          setMessage(error.response.data.message);
+          setIcon("error");
+          setToastTitle("Erro!");
+          setTimeout(() => {
+            setShowToast(false);
+          }, 3000);
+          console.error(error.response.data.message);
+        });
+    }
   };
 
   const handleLoginForm = async (formData: any) => {
     if (Object.values(formData).indexOf("") === -1) {
       try {
-        const res = await signIn('credentials', {
+        const res = await signIn("credentials", {
           email: formData.email,
           password: formData.password,
-          redirect: false, 
-        })
+          redirect: false,
+        });
         if (res && !res.error) {
           setIsModalLoginOpen(false);
           router.push("/home");
         } else {
-          console.log('deu errado');
+          if (res && res.status === 401) {
+            setShowToast(true);
+            setMessage("Usuário não Cadastrado! Realize o seu cadastro!");
+            setIcon("error");
+            setToastTitle("Erro!");
+            setTimeout(() => {
+              setShowToast(false);
+            }, 3000);
+            setIsModalLoginOpen(false);
+          }
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
     }
   };
 
   return (
     <>
+      <ToastTCF
+        icon={icon}
+        message={message}
+        title={toastTitle}
+        showToast={valueToast}
+      />
       <Col xs={12} sm={12} md={12} lg={12} className="p-0">
         <HeaderStyler>
           <header className="py-4 header_bg">
