@@ -1,0 +1,115 @@
+#!/bin/bash
+set -e
+
+if [ ! -n "$1" ]; then
+  echo 'É necessário especificar o APP no primeiro argumento'
+  exit 0
+fi
+
+if [ ! -n "$2" ]; then
+  echo 'É necessário especificar a TAG no segundo argumento'
+  exit 0
+fi
+
+# Deployment Env Vars
+export APP=$1
+export TAG=$2
+export DELETE=$3
+export CLUSTER='fiap-tech-challenge-fase-2'
+export PROJECT_ID='fiap-fe-tech-challenge-fase-2'
+export DOCKER_IMAGE="gcr.io/$PROJECT_ID/$APP:$TAG"
+export SUBDOMAIN="fase-2-$APP.challengecoders.com"
+
+if [ ! -n "$DELETE" ]; then
+  # ---------------------------------------------------------------------------------
+  # Realizar o deploy
+  # ---------------------------------------------------------------------------------
+
+  echo 'Realizando deploy...'
+
+  # Criar o cluster
+  if ! gcloud container clusters describe $CLUSTER &> /dev/null
+  then
+    gcloud container clusters create $CLUSTER \
+      --num-nodes 1 \
+      --issue-client-certificate \
+      --zone 'us-east1-b'
+  fi
+
+  # Setar o cluster a ser usado pelo `kubectl`
+  gcloud container clusters get-credentials $CLUSTER \
+    --region us-east1-b \
+    --project $PROJECT_ID
+
+  # Publish Docker Image
+  docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
+  docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
+  gcloud auth configure-docker
+  docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+
+  # Implantar
+  deployment_path="$APP/k8s/deployment.yml"
+  envsubst < "$APP/k8s/deployment.template.yml" > $deployment_path
+  kubectl apply -f $deployment_path
+  rm -v $deployment_path
+
+  # Publicar
+  service_path="$APP/k8s/service.yml"
+  envsubst < "$APP/k8s/service.template.yml" > $service_path
+  kubectl apply -f $service_path
+  rm -v $service_path
+
+  # Esperar pela finalização do deployment
+  kubectl rollout status deployment $APP
+
+  # Pegar o IP do `service`
+  while [ ! -n "$ip" ]; do
+    sleep 1
+
+    ip=$(kubectl get service $APP-service --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  done
+
+  if gcloud dns record-sets describe "$SUBDOMAIN" --zone="challenge-coders" --type="A" &> /dev/null;
+  then
+    gcloud dns record-sets delete "$SUBDOMAIN" --zone="challenge-coders" --type="A"
+  fi
+
+  # criar DNS record
+  gcloud dns record-sets create "$SUBDOMAIN." \
+    --project=$PROJECT_ID \
+    --zone="challenge-coders" \
+    --type="A" \
+    --ttl="300" \
+    --rrdatas=${ip}
+
+  echo 'Deploy concluido!'
+else
+  # # ---------------------------------------------------------------------------------
+  # # Remoção dos recursos provisionados
+  # # ---------------------------------------------------------------------------------
+
+  echo 'Removendo recursos...'
+
+  # apagar o dns record
+  gcloud dns record-sets delete "$SUBDOMAIN." \
+    --project=$PROJECT_ID \
+    --zone="challenge-coders" \
+    --type="A"
+
+  # Apagar o cluster
+  if gcloud container clusters describe $CLUSTER &> /dev/null
+  then
+    # # Apagar service
+    # kubectl delete service $APP-service
+
+    # # Apagar deployment
+    # kubectl delete deployment $APP
+
+    gcloud container clusters delete $CLUSTER --quiet
+  fi
+
+  # Apagar a imagem
+  gcloud container images delete $DOCKER_IMAGE --quiet
+
+  echo 'Remocao concluida!'
+fi
