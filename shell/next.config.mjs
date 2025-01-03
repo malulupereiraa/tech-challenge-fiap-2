@@ -20,7 +20,9 @@ const nextConfig = {
       name: "host",
       filename: "static/chunks/remoteEntry.js",
       remotes: remotes,
-      shared: {},
+      shared: {
+        "styled-components": { singleton: true, eager: true },
+      },
       extraOptions: {}, // Add appropriate options here
     };
     config.plugins.push(
