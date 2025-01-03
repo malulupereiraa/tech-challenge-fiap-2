@@ -3,7 +3,7 @@
 "use client";
 
 import { Row, Col } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import HomeStatement from "./page.home-statement";
 import { createTransaction } from "../../@core/services/transaction_service";
 import { Transaction } from "../../@core/types/transaction";
@@ -23,11 +23,11 @@ export default function Home() {
   const [toastTitle, setToastTitle] = useState<string>("");
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
-  const axiosAuth = useAxiosAuth();
   const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
   const axiosHookHandler: any = useAxiosAuth();
 
-  const handleTransacaoForm = async (e: any, formData: any) => {
+  const handleTransacaoForm = useCallback(async (e: any, formData: any) => {
+    if (session === undefined) return;
     const token: string = session?.user.result.token;
     const user: any = jwtDecode(token);
     const formattedFormData: any = {
@@ -80,7 +80,7 @@ export default function Home() {
     //     }, 3000);
     //     console.error(error);
     //   });
-  };
+  }, [session]);
 
   useEffect(() => {
     if (reloadStatement === true) setReloadStatement(false);

@@ -23,7 +23,7 @@
     "@mui/material": "^6.1.1",
     "@mui/material-nextjs": "^6.1.1",
     "@mui/x-data-grid": "^7.18.0",
-    "@storybook/addon-themes": "^8.3.3",
+    "@storybook/addon-themes": "^8.4.7",
     "@swc/plugin-styled-components": "^3.0.2",
     "@types/react-datepicker": "^6.2.0",
     "@types/styled-components": "^5.1.34",

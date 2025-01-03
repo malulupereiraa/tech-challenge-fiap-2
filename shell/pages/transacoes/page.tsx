@@ -127,8 +127,9 @@ export default function Transacoes() {
     itemClickedCurrent.current = itemClicked;
   };
 
-  const handleTransacaoForm = async (e: Event, formData: any) => {
+  const handleTransacaoForm = useCallback(async (e: Event, formData: any) => {
     e.preventDefault();
+    if (session === undefined) return;
     const token: string = session?.user.result.token;
     const user: any = jwtDecode(token);
     switch (typeTransaction) {
@@ -255,11 +256,10 @@ export default function Transacoes() {
         setIsModalTransacaoOpen(false);
         break;
     }
-  };
+  }, [session]);
 
   const fetchTransactions = useCallback(async () => {
     if (session === undefined) return;
-    console.log(session);
     setLoading(true);
     const token: string = session?.user.result.token;
     const user: any = jwtDecode(token);

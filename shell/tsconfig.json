@@ -19,7 +19,8 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "experimentalDecorators": true
   },
   // "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "pages/api/transactions/[id]"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts","types/**/*.ts", "**/*.ts", "**/*.tsx", "pages/api/transactions/[id]", "pages/api/auth/[...nextauth].ts"],
