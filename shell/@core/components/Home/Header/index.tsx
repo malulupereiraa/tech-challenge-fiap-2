@@ -53,7 +53,6 @@ export default function Header() {
     // TODO: function Cadastro Form
     if (Object.values(formData).indexOf("") === -1) {
       const formattedFormData: any = {
-        // ...formData,
         username: formData.name,
         email: formData.email,
         password: formData.password,
