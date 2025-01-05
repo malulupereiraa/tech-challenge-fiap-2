@@ -30,10 +30,14 @@ if [ ! -n "$DELETE" ]; then
   # Criar o cluster
   if ! gcloud container clusters describe $CLUSTER &> /dev/null
   then
+    echo 'Criando o Cluster...'
+
     gcloud container clusters create $CLUSTER \
       --num-nodes 1 \
       --issue-client-certificate \
       --zone 'us-east1-b'
+  else
+    echo 'O Cluster já existe...'
   fi
 
   # Setar o cluster a ser usado pelo `kubectl`
