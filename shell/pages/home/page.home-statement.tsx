@@ -67,7 +67,6 @@ export default function HomeStatement({ reload, onTransactionsLoaded }: Props) {
     if (state.loading === false) return;
 
     fetchTransactions().then(handleLoadedTransactions);
-    // listTransactions().then(handleLoadedTransactions); // versao da fase 1
   };
 
   const handleLoadedTransactions = (requestResult: any) => {
