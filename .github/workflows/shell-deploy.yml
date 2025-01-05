@@ -36,6 +36,13 @@ jobs:
     #   with:
     #     credentials_json: '${{ secrets.GKE_SA }}'
 
+    - name : Authenticate Google Cloud
+      env:
+        GCP_SECRET: ${{ secrets.GKE_SA }}
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: $GCP_SECRET
+
     - name: Publish Docker Image'
       run: |-
         echo 'XXXXXXXXX'
