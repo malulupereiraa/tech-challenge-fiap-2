@@ -61,9 +61,6 @@ export const authOptions : NextAuthOptions = {
       return {...token, ...user}
     },
     async session({ session, token, user }) {
-      // console.log(session)
-      // console.log(token)
-      // sessionStorage.setItem('loggedUser', JSON.stringify(token))
       session.user = token as any;
       // console.log(session)
       return session;
