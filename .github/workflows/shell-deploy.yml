@@ -33,6 +33,7 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
+        echo 123
         docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
         docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
         gcloud auth configure-docker
