@@ -46,6 +46,7 @@ jobs:
     - name: Publish Docker Image'
       run: |-
         gcloud auth list
+        gcloud auth list
 
         # echo 'XXXXXXXXX'
         # echo $GKE_SA > teste.txt
