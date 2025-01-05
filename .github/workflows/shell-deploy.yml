@@ -36,8 +36,8 @@ jobs:
 
     - name: Install gke-gcloud-auth-plugin
       run: |-
-        apt-get update
-        apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+        sudo apt-get update
+        sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
     - name: Deploy
       run: |-
