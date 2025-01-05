@@ -44,7 +44,7 @@ const TransacaoForm: React.FC<TransacaoFormProps> = ({
     setLoading(true);
     !isEdit && !isView
       ? ((initialValue.current = {
-          transaction: "",
+          transactionType: "",
           amount: "",
           date: new Date(),
         }),
@@ -93,7 +93,7 @@ const TransacaoForm: React.FC<TransacaoFormProps> = ({
                         onChange={handleChange}
                         value={values.transactionType}
                         disabled={isView}
-                        isValid={touched.transaction && !errors.transaction}
+                        isValid={touched.transactionType && !errors.transactionType}
                       >
                         <option>Selecione o Tipo de Transação</option>
                         <option value="deposito">Depósito</option>
@@ -102,9 +102,9 @@ const TransacaoForm: React.FC<TransacaoFormProps> = ({
                         <option value="ted">TED</option>
                         <option value="tef">TEF</option>
                       </Form.Select>
-                      {errors.transaction && touched.transaction && (
+                      {errors.transactionType && touched.transactionType && (
                         <ErrorMessage>
-                          {errors.transaction as string}
+                          {errors.transactionType as string}
                         </ErrorMessage>
                       )}
                     </Form.Group>
