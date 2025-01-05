@@ -6,12 +6,12 @@ on:
 
 env:
   APP: 'shell'
-  TAG: '123'
+  TAG: ${{ env.GITHUB_SHA }}
   GKE_SA: ${{ secrets.GKE_SA }}
   CLUSTER: 'fiap-tech-challenge-fase-2'
   PROJECT_ID: 'fiap-fe-tech-challenge-fase-2'
-  DOCKER_IMAGE: "gcr.io/fiap-fe-tech-challenge-fase-2/shell:123"
-  SUBDOMAIN: "fase-2-shell.challengecoders.com"
+  DOCKER_IMAGE: "gcr.io/fiap-fe-tech-challenge-fase-2/${{ env.APP }}:${{ env.TAG }}"
+  SUBDOMAIN: 'fase-2-shell.challengecoders.com'
 
 jobs:
   setup-build-publish-deploy:
@@ -38,7 +38,7 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        echo ${GITHUB_SHA}
+        echo ${DOCKER_IMAGE}
         # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
         # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
         # gcloud --quiet auth configure-docker
