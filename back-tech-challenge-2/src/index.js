@@ -1,8 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const { swaggerUi, swaggerDocs } = require('./config/swagger');
-// const userRoutes = require('./routes/userRoutes');
-// const transactionRoutes = require('./routes/transactionRoutes');
 const generalRoutes = require('./routes/generalRoutes');
 
 const app = express();
