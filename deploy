@@ -30,6 +30,8 @@ if [ ! -n "$DELETE" ]; then
   # Criar o cluster
   if ! gcloud container clusters describe $CLUSTER &> /dev/null
   then
+    echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+
     gcloud container clusters create $CLUSTER \
       --num-nodes 1 \
       --issue-client-certificate \
