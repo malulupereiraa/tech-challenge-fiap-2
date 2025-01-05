@@ -6,7 +6,7 @@ on:
 
 env:
   APP: 'shell'
-  TAG: ${{ env.GITHUB_SHA }}
+  TAG: ${{ GITHUB_SHA }}
   GKE_SA: ${{ secrets.GKE_SA }}
   CLUSTER: 'fiap-tech-challenge-fase-2'
   PROJECT_ID: 'fiap-fe-tech-challenge-fase-2'
