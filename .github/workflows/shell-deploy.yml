@@ -42,7 +42,7 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        gcloud info
+        gcloud auth login tech-challenge@fiap-fe-tech-challenge-fase-2.iam.gserviceaccount.com
 
         # echo 'XXXXXXXXX'
         # echo $GKE_SA > teste.txt
