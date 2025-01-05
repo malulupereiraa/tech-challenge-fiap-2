@@ -35,7 +35,9 @@ jobs:
         credentials_json: ${{ secrets.GKE_SA }}
 
     - name: Install gke-gcloud-auth-plugin
-      run: sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+      run: |-
+        apt-get update
+        apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
     - name: Deploy
       run: |-
