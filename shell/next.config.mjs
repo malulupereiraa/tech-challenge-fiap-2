@@ -14,13 +14,15 @@ const nextConfig = {
   webpack(config, options) {
     const { isServer } = options;
     const remotes = {
-      remoteNextApp: 'remoteNextApp@http://localhost:3001/_next/static/chunks/remoteEntry.js',
+      remoteNextApp: 'remoteNextApp@http://localhost:3002/_next/static/chunks/remoteEntry.js',
     };
     const federatedConfig = {
       name: "host",
       filename: "static/chunks/remoteEntry.js",
       remotes: remotes,
-      shared: {},
+      shared: {
+        "styled-components": { singleton: true, eager: true },
+      },
       extraOptions: {}, // Add appropriate options here
     };
     config.plugins.push(

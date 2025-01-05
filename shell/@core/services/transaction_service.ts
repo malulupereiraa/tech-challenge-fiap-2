@@ -12,7 +12,6 @@ export const showTransaction = async (id: string) => {
 
 export const deleteTransaction = async (id: string) => {
   const request = fetch(`/api/transactions/${id}`, { method: "DELETE" });
-
   return request.then(async (response) => {
     return response.json().then(data => data);
   });
