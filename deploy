@@ -16,7 +16,7 @@ export APP=$1
 export TAG=$2
 export DELETE=$3
 export CLUSTER='fiap-tech-challenge-fase-2'
-export PROJECT_ID='fiap-fe-tech-challenge-fase-2'
+export PROJECT_ID='tech-challenge-fase-2'
 export DOCKER_IMAGE="gcr.io/$PROJECT_ID/$APP:$TAG"
 export SUBDOMAIN="fase-2-$APP.challengecoders.com"
 
@@ -27,13 +27,19 @@ if [ ! -n "$DELETE" ]; then
 
   echo 'Realizando deploy...'
 
+  cluster_exists=$(gcloud container clusters list | grep $CLUSTER)
+
   # Criar o cluster
-  if ! gcloud container clusters describe $CLUSTER &> /dev/null
+  if [ ! -n "$cluster_exists" ]
   then
+    echo "Criando o Cluster $CLUSTER..."
+
     gcloud container clusters create $CLUSTER \
       --num-nodes 1 \
       --issue-client-certificate \
       --zone 'us-east1-b'
+  else
+    echo 'O Cluster já existe...'
   fi
 
   # Setar o cluster a ser usado pelo `kubectl`
@@ -69,15 +75,15 @@ if [ ! -n "$DELETE" ]; then
     ip=$(kubectl get service $APP-service --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
   done
 
-  if gcloud dns record-sets describe "$SUBDOMAIN" --zone="challenge-coders" --type="A" &> /dev/null;
+  if gcloud dns record-sets describe "$SUBDOMAIN" --zone="challengecoders" --type="A" &> /dev/null;
   then
-    gcloud dns record-sets delete "$SUBDOMAIN" --zone="challenge-coders" --type="A"
+    gcloud dns record-sets delete "$SUBDOMAIN" --zone="challengecoders" --type="A"
   fi
 
   # criar DNS record
   gcloud dns record-sets create "$SUBDOMAIN." \
     --project=$PROJECT_ID \
-    --zone="challenge-coders" \
+    --zone="challengecoders" \
     --type="A" \
     --ttl="300" \
     --rrdatas=${ip}
@@ -93,7 +99,7 @@ else
   # apagar o dns record
   gcloud dns record-sets delete "$SUBDOMAIN." \
     --project=$PROJECT_ID \
-    --zone="challenge-coders" \
+    --zone="challengecoders" \
     --type="A"
 
   # Apagar o cluster
