@@ -29,6 +29,7 @@ jobs:
 
     - name: GCloud Authentication
       run: |-
+        echo $GKE_SA
         echo $GKE_SA | base64 -d > authentication.json
 
         gcloud auth login --cred-file=authentication.json
