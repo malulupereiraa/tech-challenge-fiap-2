@@ -38,7 +38,8 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
-        docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
-        gcloud --quiet auth configure-docker
-        docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+        echo ${{ env.GITHUB_SHA }}
+        # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
+        # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
+        # gcloud --quiet auth configure-docker
+        # docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
