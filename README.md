@@ -7,6 +7,8 @@
 1. `docker compose build`;
 2. `docker compose up -d`.
 
+<!-- teste -->
+
 ## Contributors
 
 [Cibele Santos](https://github.com/cibsantos)                                             | [Flávia Jaconis](https://github.com/flaJaconis)                                             |[Malu Pereira](https://github.com/malulupereiraa)                                                    | [Thiago Martins](https://github.com/thiagofm33)                                             | [Victor Dantas](https://github.com/victorx9999)
