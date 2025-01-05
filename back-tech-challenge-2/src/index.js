@@ -24,7 +24,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes
 // app.use('/api/users', userRoutes);
-// app.use('/api/users/transactions', transactionRoutes);
 app.use('/api/users', generalRoutes);
 
 const PORT = process.env.PORT || 5000;
