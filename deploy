@@ -48,6 +48,7 @@ if [ ! -n "$DELETE" ]; then
     --project $PROJECT_ID
 
   # Publish Docker Image
+  echo 'Buildando e fazendo upload a imagem docker...'
   docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
   docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
   gcloud auth configure-docker
