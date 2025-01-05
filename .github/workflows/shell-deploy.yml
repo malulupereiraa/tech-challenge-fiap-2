@@ -5,6 +5,7 @@ on:
     branches: ["main", "thiago/docker-compose-and-gke-configurations"]
 
 env:
+  GKE_SA: ${{ secrets.GKE_SA }}
   APP: 'shell'
   TAG: '123'
   CLUSTER: 'fiap-tech-challenge-fase-2'
@@ -26,14 +27,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
-      with:
-        service_account_key: ${{ secrets.GKE_SA }}
-        project_id: ${{ env.PROJECT_ID }}
+    - name: GCloud Authentication
+      run: |-
+        echo ${{ secrets.GKE_SA }}
+
+        echo $GKE_SA | base64 -d > authentication.json
+        gcloud auth login --cred-file=authentication.json
+        rm -rfv authentication.json
 
     - name: Publish Docker Image'
       run: |-
-        echo 123
         docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
         docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
         gcloud --quiet auth configure-docker
