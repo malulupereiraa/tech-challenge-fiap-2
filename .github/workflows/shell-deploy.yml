@@ -38,10 +38,6 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        # cat /home/runner/work/tech-challenge-fiap-2/tech-challenge-fiap-2/gha-creds-b7d33f50a5368dd2.json
-
-        # gcloud auth list
-
         echo 'XXXXXXXXX'
         echo $GKE_SA
         echo 'XXXXXXXXX'
