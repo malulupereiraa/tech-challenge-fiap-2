@@ -1,4 +1,4 @@
-name: 'Build and Deploy to GKE'
+name: 'Shell: Build and Deploy to GKE'
 
 on:
   push:
