@@ -39,11 +39,4 @@ jobs:
         export TAG=${GITHUB_SHA}
         export DOCKER_IMAGE="gcr.io/fiap-fe-tech-challenge-fase-2/${APP}:${TAG}"
 
-        echo ${DOCKER_IMAGE}
-
-        # ./deploy $APP $TAG
-
-        # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
-        # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
-        # gcloud --quiet auth configure-docker
-        # docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+        ./deploy $APP $TAG
