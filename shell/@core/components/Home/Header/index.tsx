@@ -52,9 +52,6 @@ export default function Header() {
   const handleCadastroForm = async (formData: any) => {
     // TODO: function Cadastro Form
     if (Object.values(formData).indexOf("") === -1) {
-      // const token: string = session?.user.result.token;
-      // const user: any = jwtDecode(token);
-      // console.log(formData);
       const formattedFormData: any = {
         // ...formData,
         username: formData.name,
