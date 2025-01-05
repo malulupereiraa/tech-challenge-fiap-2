@@ -27,40 +27,40 @@ if [ ! -n "$DELETE" ]; then
 
   echo 'Realizando deploy...'
 
-  # # Criar o cluster
-  # if ! gcloud container clusters describe $CLUSTER &> /dev/null
-  # then
-  #   gcloud container clusters create $CLUSTER \
-  #     --num-nodes 1 \
-  #     --issue-client-certificate \
-  #     --zone 'us-east1-b'
-  # fi
+  # Criar o cluster
+  if ! gcloud container clusters describe $CLUSTER &> /dev/null
+  then
+    gcloud container clusters create $CLUSTER \
+      --num-nodes 1 \
+      --issue-client-certificate \
+      --zone 'us-east1-b'
+  fi
 
-  # # Setar o cluster a ser usado pelo `kubectl`
-  # gcloud container clusters get-credentials $CLUSTER \
-  #   --region us-east1-b \
-  #   --project $PROJECT_ID
+  # Setar o cluster a ser usado pelo `kubectl`
+  gcloud container clusters get-credentials $CLUSTER \
+    --region us-east1-b \
+    --project $PROJECT_ID
 
-  # # Publish Docker Image
-  # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
-  # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
-  # gcloud auth configure-docker
-  # docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+  # Publish Docker Image
+  docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
+  docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
+  gcloud auth configure-docker
+  docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
 
-  # # Implantar
-  # deployment_path="$APP/k8s/deployment.yml"
-  # envsubst < "$APP/k8s/deployment.template.yml" > $deployment_path
-  # kubectl apply -f $deployment_path
-  # rm -v $deployment_path
+  # Implantar
+  deployment_path="$APP/k8s/deployment.yml"
+  envsubst < "$APP/k8s/deployment.template.yml" > $deployment_path
+  kubectl apply -f $deployment_path
+  rm -v $deployment_path
 
-  # # Publicar
-  # service_path="$APP/k8s/service.yml"
-  # envsubst < "$APP/k8s/service.template.yml" > $service_path
-  # kubectl apply -f $service_path
-  # rm -v $service_path
+  # Publicar
+  service_path="$APP/k8s/service.yml"
+  envsubst < "$APP/k8s/service.template.yml" > $service_path
+  kubectl apply -f $service_path
+  rm -v $service_path
 
-  # # Esperar pela finalização do deployment
-  # kubectl rollout status deployment $APP
+  # Esperar pela finalização do deployment
+  kubectl rollout status deployment $APP
 
   # Pegar o IP do `service`
   while [ ! -n "$ip" ]; do
