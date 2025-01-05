@@ -40,7 +40,7 @@ jobs:
       run: |-
         echo 'XXXXXXXXX'
         echo $GKE_SA > teste.txt
-        cat teste.txt
+        gcloud auth login --cred-file=teste.txt
         echo 'XXXXXXXXX'
 
         # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
