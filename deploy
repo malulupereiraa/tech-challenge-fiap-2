@@ -16,7 +16,7 @@ export APP=$1
 export TAG=$2
 export DELETE=$3
 export CLUSTER='fiap-tech-challenge-fase-2'
-export PROJECT_ID='fiap-fe-tech-challenge-fase-2'
+export PROJECT_ID='tech-challenge-fase-2'
 export DOCKER_IMAGE="gcr.io/$PROJECT_ID/$APP:$TAG"
 export SUBDOMAIN="fase-2-$APP.challengecoders.com"
 
@@ -27,16 +27,14 @@ if [ ! -n "$DELETE" ]; then
 
   echo 'Realizando deploy...'
 
-  # Criar o cluster
-  if ! gcloud container clusters describe $CLUSTER &> /dev/null
-  then
-    echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-
-    gcloud container clusters create $CLUSTER \
-      --num-nodes 1 \
-      --issue-client-certificate \
-      --zone 'us-east1-b'
-  fi
+  # # Criar o cluster
+  # if ! gcloud container clusters describe $CLUSTER &> /dev/null
+  # then
+  #   gcloud container clusters create $CLUSTER \
+  #     --num-nodes 1 \
+  #     --issue-client-certificate \
+  #     --zone 'us-east1-b'
+  # fi
 
   # # Setar o cluster a ser usado pelo `kubectl`
   # gcloud container clusters get-credentials $CLUSTER \
@@ -64,25 +62,25 @@ if [ ! -n "$DELETE" ]; then
   # # Esperar pela finalização do deployment
   # kubectl rollout status deployment $APP
 
-  # # Pegar o IP do `service`
-  # while [ ! -n "$ip" ]; do
-  #   sleep 1
+  # Pegar o IP do `service`
+  while [ ! -n "$ip" ]; do
+    sleep 1
 
-  #   ip=$(kubectl get service $APP-service --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  # done
+    ip=$(kubectl get service $APP-service --output jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  done
 
-  # if gcloud dns record-sets describe "$SUBDOMAIN" --zone="challenge-coders" --type="A" &> /dev/null;
-  # then
-  #   gcloud dns record-sets delete "$SUBDOMAIN" --zone="challenge-coders" --type="A"
-  # fi
+  if gcloud dns record-sets describe "$SUBDOMAIN" --zone="challenge-coders" --type="A" &> /dev/null;
+  then
+    gcloud dns record-sets delete "$SUBDOMAIN" --zone="challenge-coders" --type="A"
+  fi
 
-  # # criar DNS record
-  # gcloud dns record-sets create "$SUBDOMAIN." \
-  #   --project=$PROJECT_ID \
-  #   --zone="challenge-coders" \
-  #   --type="A" \
-  #   --ttl="300" \
-  #   --rrdatas=${ip}
+  # criar DNS record
+  gcloud dns record-sets create "$SUBDOMAIN." \
+    --project=$PROJECT_ID \
+    --zone="challenge-coders" \
+    --type="A" \
+    --ttl="300" \
+    --rrdatas=${ip}
 
   echo 'Deploy concluido!'
 else
