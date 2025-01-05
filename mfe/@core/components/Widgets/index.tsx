@@ -64,8 +64,6 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
       </div>
     );
   };
-  //   console.log(loading);
-  //   console.log(userSession);
   return (
     <>
       <Container>
