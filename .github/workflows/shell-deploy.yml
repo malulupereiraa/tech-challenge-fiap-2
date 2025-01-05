@@ -34,7 +34,10 @@ jobs:
       with:
         credentials_json: ${{ secrets.GKE_SA }}
 
-    - name: Publish Docker Image'
+    - name: Install gke-gcloud-auth-plugin
+      run: sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+
+    - name: Deploy
       run: |-
         export TAG=${GITHUB_SHA}
         export DOCKER_IMAGE="gcr.io/fiap-fe-tech-challenge-fase-2/${APP}:${TAG}"
