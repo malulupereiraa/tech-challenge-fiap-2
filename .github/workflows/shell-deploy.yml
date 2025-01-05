@@ -45,10 +45,12 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        echo 'XXXXXXXXX'
-        echo $GKE_SA > teste.txt
-        gcloud auth login --cred-file=teste.txt
-        echo 'XXXXXXXXX'
+        gcloud auth list
+
+        # echo 'XXXXXXXXX'
+        # echo $GKE_SA > teste.txt
+        # gcloud auth login --cred-file=teste.txt
+        # echo 'XXXXXXXXX'
 
         # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
         # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
