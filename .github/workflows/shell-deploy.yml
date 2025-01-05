@@ -27,14 +27,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
-    #   with:
-    #     service_account_key: ${{ secrets.GKE_SA }}
-    #     project_id: ${{ env.PROJECT_ID }}
-
-    # - uses: 'google-github-actions/auth@v2'
-    #   with:
-    #     credentials_json: '${{ secrets.GKE_SA }}'
+    - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+      with:
+        service_account_key: ${{ secrets.GKE_SA }}
+        project_id: ${{ env.PROJECT_ID }}
 
     - uses: 'google-github-actions/auth@v2'
       with:
@@ -42,14 +38,7 @@ jobs:
 
     - name: Publish Docker Image'
       run: |-
-        gcloud auth login tech-challenge@fiap-fe-tech-challenge-fase-2.iam.gserviceaccount.com
-
-        # echo 'XXXXXXXXX'
-        # echo $GKE_SA > teste.txt
-        # gcloud auth login --cred-file=teste.txt
-        # echo 'XXXXXXXXX'
-
-        # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
-        # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
-        # gcloud --quiet auth configure-docker
-        # docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+        docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
+        docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
+        gcloud --quiet auth configure-docker
+        docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
