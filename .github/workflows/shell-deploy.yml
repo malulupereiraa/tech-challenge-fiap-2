@@ -39,7 +39,7 @@ jobs:
       run: |-
         gcloud auth list
 
-        docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
-        docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
-        gcloud --quiet auth configure-docker
-        docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
+        # docker build -t "$APP" -f "./$APP/k8s/Dockerfile" "./$APP"
+        # docker tag "$APP" "gcr.io/$PROJECT_ID/$APP:$TAG"
+        # gcloud --quiet auth configure-docker
+        # docker push "gcr.io/$PROJECT_ID/$APP:$TAG"
