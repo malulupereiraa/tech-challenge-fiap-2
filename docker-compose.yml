@@ -2,10 +2,15 @@ services:
   shell:
     build: ./shell
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
-      - REMOTE_NEXT_APP_URL=http://localhost:4000
+      - REMOTE_NEXT_APP_URL=http://localhost:3002
+      - NEXTAUTH_URL=http://localhost:5000
   mfe:
     build: ./mfe
     ports:
-      - "4000:3001"
+      - "3002:3002"
+  api:
+    build: ./back-tech-challenge-2
+    ports:
+      - "5000:5000"
