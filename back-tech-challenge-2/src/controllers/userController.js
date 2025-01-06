@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -39,7 +39,7 @@ const getUsers = async (req, res) => {
 
 // Get a single user by ID
  const getUserByID = async (req, res) => {
-   const { id } = req.params;   
+   const { id } = req.params;
   try {
     const user = await User.findById({ _id: id });
     if (!user) {
