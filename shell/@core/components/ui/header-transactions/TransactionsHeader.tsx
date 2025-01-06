@@ -20,7 +20,7 @@ export default function TransactionsHeader(props: TituloProps) {
 
   const NameHeader = () => {
     if(width > 360)
-        return <p id='clientName'>{props.name}</p>;
+        return <p id='clientName'>{props.name ? props.name : "Carregando Nome de Usuário"}</p>;
   };
 
   return (
