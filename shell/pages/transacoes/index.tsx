@@ -11,6 +11,9 @@ import { Fab, Tooltip } from "@mui/material";
 import { IoIosLogOut } from "react-icons/io";
 import router from "next/router";
 
+
+import userReducer from "@/redux/user/userReducer";
+
 export const metadata: Metadata = {
   title: "Bytebank - Transações",
   description: "Tech Challenge FIAP",
@@ -23,7 +26,13 @@ export const dynamic = "force-dynamic";
 
 export default function RootLayout() {
   const { data: session } = useSession();
-  console.log(session); // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+  console.log(session);
+  // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+  
+  // const { initialStateUser } = useSelector(() => userReducer.user);
+ 
+  console.log(session);
+
   const logout = () => {
     router.push("/");
     signOut({

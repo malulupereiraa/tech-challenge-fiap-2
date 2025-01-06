@@ -7,24 +7,28 @@ import StyledComponentsRegistry from "@/@core/lib/registry";
 import { StyledRoot } from "@/@theme/styledRoot";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { Provider } from "react-redux";
+import store from "@/redux/store";
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <Container fluid>
-      <AppRouterCacheProvider>
-        <StyledComponentsRegistry>
-          <StyledRoot>
-            <Suspense fallback={<Loading />}>
-              <SessionProvider session={session}>
-                <Component {...pageProps} />
-              </SessionProvider>
-            </Suspense>
-          </StyledRoot>
-        </StyledComponentsRegistry>
-      </AppRouterCacheProvider>
-    </Container>
+    <Provider store={store}>
+      <Container fluid>
+        <AppRouterCacheProvider>
+          <StyledComponentsRegistry>
+            <StyledRoot>
+              <Suspense fallback={<Loading />}>
+                <SessionProvider session={session}>
+                  <Component {...pageProps} />
+                </SessionProvider>
+              </Suspense>
+            </StyledRoot>
+          </StyledComponentsRegistry>
+        </AppRouterCacheProvider>
+      </Container>
+    </Provider>
   );
 }

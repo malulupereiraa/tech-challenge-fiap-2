@@ -14,6 +14,9 @@ import { IoIosLogOut } from "react-icons/io";
 import router from "next/router";
 import { Row } from "react-bootstrap";
 
+import { useDispatch } from "react-redux";
+import { authLogin } from "@/redux/user/actions/loginUserAction";
+
 export const metadata: Metadata = {
   title: "Bytebank - Início",
   description: "Tech Challenge FIAP",
@@ -24,9 +27,18 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const userDataStore = (session: any) => {
+  const dispatch = useDispatch();
+  dispatch(authLogin(session));
+}
+
 export default function RootLayout() {
   const { data: session } = useSession();
-  console.log(session); // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+  // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+  
+  userDataStore(session);
+ 
+  console.log(session);
 
   const logout = () => {
     router.push("/");
