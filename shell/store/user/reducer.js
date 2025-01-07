@@ -26,6 +26,7 @@ export default function userReducer(state = userInitialState, action) {
         user: {
           token: "",
           username: "",
+          widgets: [],
         },
       };
     default:
