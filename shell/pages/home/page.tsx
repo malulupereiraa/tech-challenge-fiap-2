@@ -32,8 +32,27 @@ export default function Home() {
   const [cotas, setCotas] = useState<{ nome: string; moeda: string; cotacao: any; variacao: any }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const Graficos = dynamic(() => import('remoteNextApp/app'), {
+  // @ts-ignore
+  const Graficos = dynamic(() => import('remoteNextApp/areaGrafico'), {
     ssr: false,
+    loading: () => (
+      <Row>
+        <Col
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          className=" d-flex justify-content-center"
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="secondary"
+            size="sm"
+          />
+        </Col>
+      </Row>
+    ),
   });
 
   useEffect(() => {
@@ -256,12 +275,6 @@ export default function Home() {
         </Row>
 
         <Graficos />
-{/*   
-        <Row className="rowCardTCF">
-          <Col xs={12} sm={12} md={12} lg={12}>
-            <Graficos />
-          </Col>
-        </Row> */}
 
       </Col>
       <Col xs={12} sm={12} md={4} lg={4} xl={4}>

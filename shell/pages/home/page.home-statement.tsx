@@ -57,6 +57,7 @@ export default function HomeStatement({ reload, onTransactionsLoaded }: Props) {
     if (session === undefined) return;
     const token: string = session?.user.result.token;
     const user: any = jwtDecode(token);
+  
     const res = await transactionsService.getTransactions(axiosHookHandler, {
       userId: user.userId,
     });

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout() {
   const { data: session } = useSession();
   console.log(session); // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
-
+  console.log(session?.user.result)
   const logout = () => {
     router.push("/");
     signOut({
