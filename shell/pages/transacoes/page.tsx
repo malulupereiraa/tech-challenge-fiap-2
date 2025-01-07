@@ -125,7 +125,6 @@ export default function Transacoes() {
       if (user.token === "") return;
       const token: string = user.token;
       const decodedUser: any = jwtDecode(token);
-      console.log(decodedUser.userId);
       switch (typeTransaction) {
         case "add":
           const formattedFormDataAdd: any = {
