@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -5,13 +6,6 @@
 import { Row, Col } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
-import {
-  createTransaction,
-  deleteTransaction,
-  listTransactions,
-  showTransaction,
-  updateTransaction,
-} from "../../@core/services/transaction_service";
 import transactionTypeDictionary from "../../@core/utils/transaction-type-dictionary";
 import ToastTCF from "../../@core/components/Toast";
 import BaseActions from "../../@core/components/ui/Datatable/BaseActions";
@@ -20,12 +14,12 @@ import ModalTCF from "../../@core/components/ui/Modal";
 import ButtonTCF from "../../@core/components/ui/Button";
 import DatatableTCF from "../../@core/components/ui/Datatable";
 import TransacaoForm from "../../@core/components/forms/Transacao";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import router from "next/router";
-import useTransactionsService from "@/@core/services/api-node/transactions.service";
+import { useSelector } from "react-redux";
 
 export default function Transacoes() {
   const [transactions, setTransactions] = useState<any>([]);
@@ -43,15 +37,13 @@ export default function Transacoes() {
   const [toastTitle, setToastTitle] = useState<string>("");
   const [dataToForm, setDataToForm] = useState<any>();
   const axiosHookHandler: any = useAxiosAuth();
-
-  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
+  const { user } = useSelector((state: any) => state.user);
 
   const handleDeleteClose = () => {
     setIsModalOpen(false);
   };
 
   const handleCloseDeleteSubmit = async () => {
-    console.log(itemClickedCurrent.current);
     const criteriaToDelete: any = {
       id: itemClickedCurrent.current,
     };
@@ -127,147 +119,151 @@ export default function Transacoes() {
     itemClickedCurrent.current = itemClicked;
   };
 
-  const handleTransacaoForm = useCallback(async (e: Event, formData: any) => {
-    e.preventDefault();
-    if (session === undefined) return;
-    const token: string = session?.user.result.token;
-    const user: any = jwtDecode(token);
-    switch (typeTransaction) {
-      case "add":
-        const formattedFormDataAdd: any = {
-          ...formData,
-          userId: user.userId,
-          description: "Transação Criada na Tela de Transações",
-        };
-        await transactionsService
-          .createTransaction(axiosHookHandler, formattedFormDataAdd)
-          .then(() => {
-            fetchTransactions();
-            setShowToast(true);
-            setMessage("Transação Realizada com Sucesso");
-            setIcon("success");
-            setToastTitle("Sucesso!");
-            setTimeout(() => {
-              setShowToast(false);
-            }, 3000);
-          })
-          .catch((error: any) => {
-            setShowToast(true);
-            setMessage(error.response.data.message);
-            setIcon("error");
-            setToastTitle("Erro!");
-            setTimeout(() => {
-              setShowToast(false);
-            }, 3000);
-            console.error(error.response.data.message);
-          });
+  const handleTransacaoForm = useCallback(
+    async (e: Event, formData: any) => {
+      e.preventDefault();
+      if (user.token === "") return;
+      const token: string = user.token;
+      const decodedUser: any = jwtDecode(token);
+      console.log(decodedUser.userId);
+      switch (typeTransaction) {
+        case "add":
+          const formattedFormDataAdd: any = {
+            ...formData,
+            userId: decodedUser.userId,
+            description: "Transação Criada na Tela de Transações",
+          };
+          await transactionsService
+            .createTransaction(axiosHookHandler, formattedFormDataAdd)
+            .then(() => {
+              fetchTransactions();
+              setShowToast(true);
+              setMessage("Transação Realizada com Sucesso");
+              setIcon("success");
+              setToastTitle("Sucesso!");
+              setTimeout(() => {
+                setShowToast(false);
+              }, 3000);
+            })
+            .catch((error: any) => {
+              setShowToast(true);
+              setMessage(error.response.data.message);
+              setIcon("error");
+              setToastTitle("Erro!");
+              setTimeout(() => {
+                setShowToast(false);
+              }, 3000);
+              console.error(error.response.data.message);
+            });
 
-        // CÓDIGO DA FASE 1 - PARA CRITÉRIO DE COMPARAÇÃO
-        // await createTransaction(formData)
-        //   .then((res: any) => {
-        //     const transacoesToTable = res;
-        //     setTransactions(transacoesToTable);
-        //     setShowToast(true);
-        //     setMessage("Transação Realizada com Sucesso");
-        //     setIcon("success");
-        //     setToastTitle("Sucesso!");
-        //     setTimeout(() => {
-        //       setShowToast(false);
-        //     }, 3000);
-        //   })
-        //   .catch((error: any) => {
-        //     setShowToast(true);
-        //     setMessage(error);
-        //     setIcon("error");
-        //     setToastTitle("Erro!");
-        //     setTimeout(() => {
-        //       setShowToast(false);
-        //     }, 3000);
-        //     console.error(error);
-        //     setLoading(false);
-        //   });
-        setLoading(true);
-        setIsModalTransacaoOpen(false);
-        break;
-      case "edit":
-        const transactionId: any = { id: formData._id };
-        const formattedFormDataEdit: any = {
-          ...formData,
-          userId: user.userId,
-          description: "Transação Editada na Tela de Transações",
-        };
-        await transactionsService
-          .updateTransaction(
-            axiosHookHandler,
-            formattedFormDataEdit,
-            transactionId
-          )
-          .then(() => {
-            fetchTransactions();
-            setShowToast(true);
-            setMessage("Transação Atualizada com Sucesso");
-            setIcon("success");
-            setToastTitle("Sucesso!");
-            setTimeout(() => {
-              setShowToast(false);
-            }, 3000);
-          })
-          .catch((error: any) => {
-            setShowToast(true);
-            setMessage(error.response.data.message);
-            setIcon("error");
-            setToastTitle("Erro!");
-            setTimeout(() => {
-              setShowToast(false);
-            }, 3000);
-            console.error(error.response.data.message);
-          });
+          // CÓDIGO DA FASE 1 - PARA CRITÉRIO DE COMPARAÇÃO
+          // await createTransaction(formData)
+          //   .then((res: any) => {
+          //     const transacoesToTable = res;
+          //     setTransactions(transacoesToTable);
+          //     setShowToast(true);
+          //     setMessage("Transação Realizada com Sucesso");
+          //     setIcon("success");
+          //     setToastTitle("Sucesso!");
+          //     setTimeout(() => {
+          //       setShowToast(false);
+          //     }, 3000);
+          //   })
+          //   .catch((error: any) => {
+          //     setShowToast(true);
+          //     setMessage(error);
+          //     setIcon("error");
+          //     setToastTitle("Erro!");
+          //     setTimeout(() => {
+          //       setShowToast(false);
+          //     }, 3000);
+          //     console.error(error);
+          //     setLoading(false);
+          //   });
+          setLoading(true);
+          setIsModalTransacaoOpen(false);
+          break;
+        case "edit":
+          const transactionId: any = { id: formData._id };
+          const formattedFormDataEdit: any = {
+            ...formData,
+            userId: decodedUser.userId,
+            description: "Transação Editada na Tela de Transações",
+          };
+          await transactionsService
+            .updateTransaction(
+              axiosHookHandler,
+              formattedFormDataEdit,
+              transactionId
+            )
+            .then(() => {
+              fetchTransactions();
+              setShowToast(true);
+              setMessage("Transação Atualizada com Sucesso");
+              setIcon("success");
+              setToastTitle("Sucesso!");
+              setTimeout(() => {
+                setShowToast(false);
+              }, 3000);
+            })
+            .catch((error: any) => {
+              setShowToast(true);
+              setMessage(error.response.data.message);
+              setIcon("error");
+              setToastTitle("Erro!");
+              setTimeout(() => {
+                setShowToast(false);
+              }, 3000);
+              console.error(error.response.data.message);
+            });
 
-        // CÓDIGO DA FASE 1 - PARA CRITÉRIO DE COMPARAÇÃO
-        // await updateTransaction(dataToForm.id, formData)
-        //   .then((res: any) => {
-        //     const transacoesToTable = res;
-        //     setTransactions(transacoesToTable);
-        //     setShowToast(true);
-        //     setMessage("Transação Modificada com Sucesso");
-        //     setIcon("success");
-        //     setToastTitle("Sucesso!");
-        //     setTimeout(() => {
-        //       setShowToast(false);
-        //     }, 3000);
-        //   })
-        //   .catch((error: any) => {
-        //     setShowToast(true);
-        //     setMessage(error);
-        //     setIcon("error");
-        //     setToastTitle("Erro!");
-        //     setTimeout(() => {
-        //       setShowToast(false);
-        //     }, 3000);
-        //     console.error(error);
-        //     setLoading(false);
-        //   });
+          // CÓDIGO DA FASE 1 - PARA CRITÉRIO DE COMPARAÇÃO
+          // await updateTransaction(dataToForm.id, formData)
+          //   .then((res: any) => {
+          //     const transacoesToTable = res;
+          //     setTransactions(transacoesToTable);
+          //     setShowToast(true);
+          //     setMessage("Transação Modificada com Sucesso");
+          //     setIcon("success");
+          //     setToastTitle("Sucesso!");
+          //     setTimeout(() => {
+          //       setShowToast(false);
+          //     }, 3000);
+          //   })
+          //   .catch((error: any) => {
+          //     setShowToast(true);
+          //     setMessage(error);
+          //     setIcon("error");
+          //     setToastTitle("Erro!");
+          //     setTimeout(() => {
+          //       setShowToast(false);
+          //     }, 3000);
+          //     console.error(error);
+          //     setLoading(false);
+          //   });
 
-        setLoading(true);
-        setIsModalTransacaoOpen(false);
-        break;
-      default:
-        setLoading(true);
-        setIsModalTransacaoOpen(false);
-        break;
-    }
-  }, [session]);
+          setLoading(true);
+          setIsModalTransacaoOpen(false);
+          break;
+        default:
+          setLoading(true);
+          setIsModalTransacaoOpen(false);
+          break;
+      }
+    },
+    [user]
+  );
 
   const fetchTransactions = useCallback(async () => {
-    if (session === undefined) return;
+    if (user.token === "") return;
     setLoading(true);
-    const token: string = session?.user.result.token;
-    const user: any = jwtDecode(token);
+    const token: string = user.token;
+    const decodedUser: any = jwtDecode(token);
 
     try {
       await transactionsService
         .getTransactions(axiosHookHandler, {
-          userId: user.userId,
+          userId: decodedUser.userId,
         })
         .then((res: any) => {
           const options: any = {
@@ -315,7 +311,7 @@ export default function Transacoes() {
     } catch (error: any) {
       console.error(error);
     }
-  }, [session]);
+  }, [user]);
 
   // CODIGO DA FASE 1 - PARA EFEITO COMPARATIVO
   // const fetchTransactions = async () => {
@@ -399,7 +395,7 @@ export default function Transacoes() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [session]);
+  }, [user]);
 
   return (
     <>

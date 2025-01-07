@@ -7,11 +7,9 @@ import StyledComponentsRegistry from "@/@core/lib/registry";
 import { StyledRoot } from "@/@theme/styledRoot";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { wrapper } from "../store/store";
 
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps) {
+const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   return (
     <Container fluid>
       <AppRouterCacheProvider>
@@ -27,4 +25,6 @@ export default function App({
       </AppRouterCacheProvider>
     </Container>
   );
-}
+};
+
+export default wrapper.withRedux(App);
