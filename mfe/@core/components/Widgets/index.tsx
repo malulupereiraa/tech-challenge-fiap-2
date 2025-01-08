@@ -9,6 +9,7 @@ import ModalTCF from "../ui/Modal";
 import { useState } from "react";
 import SelectWidgetsForm from "../forms/Select-Widgets";
 import CreditCardTCF from "../CreditCard";
+import WeatherWidget from "../WeatherWidget";
 
 const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
   loading,
@@ -61,7 +62,7 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
     return (
       <div>
         {widgetsState.card && <CreditCardTCF />}
-        {widgetsState.weather && <div>Weather</div>}
+        {widgetsState.weather && <WeatherWidget />}
       </div>
     );
   };
