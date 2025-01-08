@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,17 +7,16 @@
 import { Row, Col, Spinner } from "react-bootstrap";
 import { useCallback, useEffect, useState } from "react";
 import HomeStatement from "./page.home-statement";
-import { createTransaction } from "../../@core/services/transaction_service";
 import { Transaction } from "../../@core/types/transaction";
 import ToastTCF from "../../@core/components/Toast";
 import CardSaldoComponent from "../../@core/components/ui/CardSaldo/CardSaldo";
 import CardTCF from "../../@core/components/ui/Card";
 import TransacaoForm from "../../@core/components/forms/Transacao";
 import { jwtDecode } from "jwt-decode";
-import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import dynamic from "next/dynamic";
+import { useSelector } from "react-redux";
 
 export default function Home() {
   const [valueToast, setShowToast] = useState<boolean>(false);
@@ -26,17 +26,17 @@ export default function Home() {
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [loadWidgets, setLoadWidgets] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
-  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
   const axiosHookHandler: any = useAxiosAuth();
+  const { user } = useSelector((state: any) => state.user);
 
   const handleTransacaoForm = useCallback(
     async (e: any, formData: any) => {
-      if (session === undefined) return;
-      const token: string = session?.user.result.token;
-      const user: any = jwtDecode(token);
+      if (user.token === "") return;
+      const token: string = user.token;
+      const decodedUser: any = jwtDecode(token);
       const formattedFormData: any = {
         ...formData,
-        userId: user.userId,
+        userId: decodedUser.userId,
         description: "Transação Realizada na Home",
       };
       await transactionsService
@@ -85,7 +85,7 @@ export default function Home() {
       //     console.error(error);
       //   });
     },
-    [session]
+    [user]
   );
 
   useEffect(() => {
@@ -136,17 +136,17 @@ export default function Home() {
   }) => {
     return (
       // @ts-ignore
-      <WidgetsComponent loading={loadingComponent} userSession={userSession} /> // userSession pode ser passado como gerenciador de estados
+      <WidgetsComponent loading={loadingComponent} userSession={userSession} />
     );
   };
 
   useEffect(() => {
-    if (session === undefined) return;
+    if (user.username === "") return;
     setLoadWidgets(true);
     setTimeout(() => {
       setLoadWidgets(false);
     }, 2000);
-  }, [session]);
+  }, [user]);
 
   return (
     <>
@@ -160,7 +160,7 @@ export default function Home() {
         <Row className="rowBalance">
           <Col xs={12} sm={12} md={12} lg={12}>
             <CardSaldoComponent
-              name={session && session.user.result.username}
+              name={user && user.username}
               balance={balance}
               showBalance={false}
             />
@@ -191,7 +191,7 @@ export default function Home() {
           <Col xs={12} sm={12} md={12} lg={12} className="mt-3">
             <WidgetComponentCaller
               loadingComponent={loadWidgets}
-              userSession={session}
+              userSession={user}
             />
           </Col>
         </Row>
