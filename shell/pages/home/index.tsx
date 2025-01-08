@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import StyledHome from "../home/styledHome";
 import Loading from "./loading";
 import TransactionsHeader from "../../@core/components/ui/header-transactions/TransactionsHeader";
@@ -28,9 +28,29 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default function RootLayout() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.user);
+  const [widgetsChosen, setWidgetsChosen] = useState<any>({});
+
+  const handleUpdateUser = async () => {
+    if (session) {
+      const newSession = {
+        ...session,
+        user: {
+          result: {
+            ...session.user.result,
+            widgets:
+              Object.keys(widgetsChosen).length === 0
+                ? session.user.result.widgets
+                : widgetsChosen,
+          },
+        },
+      };
+
+      await update(newSession);
+    }
+  };
 
   const logout = () => {
     router.push("/");
@@ -38,11 +58,26 @@ export default function RootLayout() {
       redirect: false,
     });
   };
+
   useEffect(() => {
     if (session) {
-      dispatch(returnUserData(session.user.result));
+      dispatch(
+        returnUserData({
+          ...user,
+          token: session.user.result.token,
+          username: session.user.result.username,
+          widgets:
+            Object.keys(widgetsChosen).length === 0
+              ? session.user.result.widgets
+              : widgetsChosen,
+        })
+      );
     }
-  }, [session]);
+  }, [session, widgetsChosen]);
+
+  useEffect(() => {
+    handleUpdateUser();
+  }, [widgetsChosen]);
 
   return (
     <>
@@ -56,7 +91,7 @@ export default function RootLayout() {
         <Suspense fallback={<Loading />}>
           <div className="col-xs-12 col-sm-12 col-md-9 col-xl-10 py-3">
             <StyledHome>
-              <Home />
+              <Home widgets={setWidgetsChosen} />
             </StyledHome>
             <FloatButtonRow justify="end">
               <Tooltip title="Sair do Sistema">

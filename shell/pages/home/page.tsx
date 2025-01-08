@@ -16,9 +16,15 @@ import { jwtDecode } from "jwt-decode";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import dynamic from "next/dynamic";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { returnUserData } from "@/store/user/action";
+import userService from "@/@core/services/api-node/user.service";
 
-export default function Home() {
+interface Props {
+  widgets: (value: any) => void;
+}
+
+export default function Home({ widgets }: Props) {
   const [valueToast, setShowToast] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [icon, setIcon] = useState<any>("");
@@ -26,11 +32,15 @@ export default function Home() {
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [loadWidgets, setLoadWidgets] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
+  const [transactionsToMFE, setTransactionsToMFE] = useState<any>({});
+  const [widgetsToMFE, setWidgetsToMFE] = useState<any>({});
   const axiosHookHandler: any = useAxiosAuth();
+  const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.user);
 
   const handleTransacaoForm = useCallback(
     async (e: any, formData: any) => {
+      e.preventDefault();
       if (user.token === "") return;
       const token: string = user.token;
       const decodedUser: any = jwtDecode(token);
@@ -94,13 +104,20 @@ export default function Home() {
 
   const calculateBalance = (transactions: []) => {
     if (transactions === undefined) return;
+    setTransactionsToMFE(transactions);
     setBalance((_) => {
-      return transactions.reduce((sum, transaction: Transaction) => {
-        const amountMultiplier =
-          transaction.transactionType == "deposito" ? 1 : -1;
+      const transactionsFiltered: any = transactions.filter(
+        (transaction: any) => transaction.transactionType !== "credito"
+      );
+      return transactionsFiltered.reduce(
+        (sum: any, transaction: Transaction) => {
+          const amountMultiplier =
+            transaction.transactionType == "deposito" ? 1 : -1;
 
-        return sum + transaction.amount * amountMultiplier;
-      }, 0);
+          return sum + transaction.amount * amountMultiplier;
+        },
+        0
+      );
     });
   };
 
@@ -130,15 +147,70 @@ export default function Home() {
   const WidgetComponentCaller = ({
     loadingComponent,
     userSession,
+    transactions,
+    setWidgets,
   }: {
     loadingComponent: boolean;
     userSession: any;
+    transactions: any;
+    setWidgets: (value: any) => void;
   }) => {
     return (
-      // @ts-ignore
-      <WidgetsComponent loading={loadingComponent} userSession={userSession} />
+      <WidgetsComponent
+        // @ts-ignore
+        loading={loadingComponent}
+        userSession={userSession}
+        transactions={transactions}
+        setWidgets={setWidgets}
+      />
     );
   };
+
+  const updateUserWidgets = useCallback(async () => {
+    if (user.token === "" || Object.keys(widgetsToMFE).length === 0) return;
+    const token: string = user.token;
+    const decodedUser: any = jwtDecode(token);
+
+    const userId: any = { id: decodedUser.userId };
+    const formattedDataToUpdate: any = {
+      username: "",
+      email: "",
+      password: "",
+      widgets: widgetsToMFE,
+    };
+    await userService
+      .updateUser(axiosHookHandler, formattedDataToUpdate, userId)
+      .then(() => {
+        dispatch(
+          returnUserData({
+            ...user,
+            widgets: widgetsToMFE,
+          })
+        );
+        setShowToast(true);
+        setMessage("Widgets Atualizados com Sucesso");
+        setIcon("success");
+        setToastTitle("Sucesso!");
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+      })
+      .catch((error: any) => {
+        setShowToast(true);
+        setMessage(error.response.data.message);
+        setIcon("error");
+        setToastTitle("Erro!");
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+        console.error(error.response.data.message);
+      });
+  }, [user, widgetsToMFE]);
+
+  useEffect(() => {
+    if (user.username === "") return;
+    updateUserWidgets();
+  }, [widgetsToMFE]);
 
   useEffect(() => {
     if (user.username === "") return;
@@ -146,6 +218,7 @@ export default function Home() {
     setTimeout(() => {
       setLoadWidgets(false);
     }, 2000);
+    widgets(widgetsToMFE);
   }, [user]);
 
   return (
@@ -192,6 +265,8 @@ export default function Home() {
             <WidgetComponentCaller
               loadingComponent={loadWidgets}
               userSession={user}
+              transactions={transactionsToMFE}
+              setWidgets={setWidgetsToMFE}
             />
           </Col>
         </Row>

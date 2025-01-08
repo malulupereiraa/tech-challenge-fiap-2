@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { Col, Spinner } from "react-bootstrap";
 
@@ -15,6 +16,7 @@ import {
   Front,
   Investor,
   LabelLimit,
+  LabelLimitValue,
   Limit,
   Logo,
   Master,
@@ -23,6 +25,7 @@ import {
 import LinearProgress, {
   LinearProgressProps,
 } from "@mui/material/LinearProgress";
+import { useEffect, useState } from "react";
 
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
@@ -40,8 +43,28 @@ function LinearProgressWithLabel(
     </Box>
   );
 }
-
-const CreditCardTCF: React.FC<CreditCardProps> = ({ user, usedValue }) => {
+const CreditCardTCF: React.FC<CreditCardProps> = ({ user, transactions }) => {
+  const [usedValue, setUsedValue] = useState<number | undefined>(0);
+  const [limitAvailable, setLimitAvailable] = useState<number | undefined>(
+    1000
+  );
+  const handleUsedValue = () => {
+    if (transactions && transactions.length > 0) {
+      const usedValue = transactions.reduce((acc: number, transaction: any) => {
+        if (transaction.transactionType === "credito") {
+          return acc + transaction.amount;
+        }
+        return acc;
+      }, 0);
+      setUsedValue(usedValue);
+      setLimitAvailable((usedValue * 100) / 1000);
+    } else {
+      setLimitAvailable(100);
+    }
+  };
+  useEffect(() => {
+    handleUsedValue();
+  }, [handleUsedValue, transactions]);
   return (
     <>
       <div className="center">
@@ -50,15 +73,24 @@ const CreditCardTCF: React.FC<CreditCardProps> = ({ user, usedValue }) => {
             <Front className="front">
               <Logo
                 className="logo"
-                width="40"
-                height="40"
-                viewBox="0 0 17.5 16.2"
+                width="30"
+                height="30"
+                viewBox="0 0 27 27"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M3.2 0l5.4 5.6L14.3 0l3.2 3v9L13 16.2V7.8l-4.4 4.1L4.5 8v8.2L0 12V3l3.2-3z"
+                  d="M13.6312 20.0301H0.155914V26.8007H13.6312V20.0301Z"
                   fill="white"
-                ></path>
+                />
+                <path
+                  d="M20.3226 6.53687H6.84735V20.0748H20.3226V6.53687Z"
+                  fill="white"
+                />
+                <path d="M6.80286 0H0.248352V6.49216H6.80286V0Z" fill="white" />
+                <path d="M26.7368 0H20.2747V6.49216H26.7368V0Z" fill="white" />
               </Logo>
+
               <Investor className="investor">Bytebank</Investor>
               <Chip className="chip">
                 <div className="chip-line"></div>
@@ -80,10 +112,14 @@ const CreditCardTCF: React.FC<CreditCardProps> = ({ user, usedValue }) => {
               </Wave>
               <Limit>
                 <LabelLimit>Limite:</LabelLimit>
-                <div>R${usedValue ? usedValue : "0,00"}/ R$ 1.000,00</div>
+                <LabelLimitValue>
+                  R${usedValue ? usedValue : "0,00"}/ R$ 1.000,00
+                </LabelLimitValue>
                 <CardLimitBar>
                   <LinearProgressWithLabel
-                    value={typeof usedValue === "number" ? usedValue : 0}
+                    value={
+                      typeof limitAvailable === "number" ? limitAvailable : 0
+                    }
                   />
                 </CardLimitBar>
               </Limit>
@@ -98,7 +134,7 @@ const CreditCardTCF: React.FC<CreditCardProps> = ({ user, usedValue }) => {
                 <span className="end-date">11/32</span>
               </End>
               <CardHolder className="card-holder">
-                {user ? user : "HERMELINDA SILVA"}
+                {user ? user.username : "HERMELINDA SILVA"}
               </CardHolder>
               <Master className="master">
                 <div className="circle master-red"></div>
