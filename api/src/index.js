@@ -12,11 +12,13 @@ app.use(express.json());
 connectDB();
 
 const cors = require('cors');
-const corsOptions ={
-    origin:'http://localhost:3001', 
-    credentials:true,            //access-control-allow-credentials:true
-    optionSuccessStatus:200
+
+const corsOptions = {
+  origin: ['http://localhost:3001', 'http://fase-2-shell.challengecoders.com'],
+  credentials: true, // access-control-allow-credentials: true
+  optionSuccessStatus: 200
 }
+
 app.use(cors(corsOptions));
 
 // Swagger setup
@@ -27,4 +29,5 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/users', generalRoutes);
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => console.log(`Servidor Rodando na Porta: ${PORT}`));
