@@ -2,7 +2,7 @@ name: 'Shell: Build and Deploy to GKE'
 
 on:
   push:
-    branches: ["main", "thiago/docker-compose-and-gke-configurations"]
+    branches: ["thiago/docker-compose-and-gke-configurations"]
 
 env:
   APP: 'shell'
