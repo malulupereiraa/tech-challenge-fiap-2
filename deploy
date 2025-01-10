@@ -27,11 +27,7 @@ if [ ! -n "$DELETE" ]; then
 
   echo 'Realizando deploy...'
 
-  set +e
-
-  cluster_exists=$(gcloud container clusters describe $CLUSTER)
-
-  set -e
+  cluster_exists=$(gcloud container clusters list --filter="name=$CLUSTER")
 
   # Criar o cluster
   if [ ! -n "$cluster_exists" ]
