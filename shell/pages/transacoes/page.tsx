@@ -53,12 +53,12 @@ export default function Transacoes() {
 
   const { data: session } = useSession();
   const token = session?.user?.result?.token;
+  let userId = "";
   
   if (token) {
     try {
       const decodedToken = jwtDecode<CustomJwtPayload>(token);
-      console.log("Decoded Token:", decodedToken);
-      console.log("User ID:", decodedToken.userId);
+      userId = decodedToken.userId;
     } catch (error) {
       console.error("Erro ao decodificar o token:", error);
     }
@@ -485,7 +485,7 @@ export default function Transacoes() {
       <CardTCF
         title="Resumo das Transações"
         body={
-          <TransacoesGraficos token={token} clientId={'6780eacea73fd1858b21be34'} />
+          <TransacoesGraficos token={token} clientId={userId} />
         }
       />
     </>
