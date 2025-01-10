@@ -28,6 +28,12 @@ import router from "next/router";
 import useTransactionsService from "@/@core/services/api-node/transactions.service";
 import dynamic from "next/dynamic";
 
+interface CustomJwtPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
 export default function Transacoes() {
   const [transactions, setTransactions] = useState<any>([]);
   const [rowId, setRowId] = useState(null);
@@ -45,7 +51,22 @@ export default function Transacoes() {
   const [dataToForm, setDataToForm] = useState<any>();
   const axiosHookHandler: any = useAxiosAuth();
 
-  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
+  const { data: session } = useSession();
+  const token = session?.user?.result?.token;
+  
+  if (token) {
+    try {
+      const decodedToken = jwtDecode<CustomJwtPayload>(token);
+      console.log("Decoded Token:", decodedToken);
+      console.log("User ID:", decodedToken.userId);
+    } catch (error) {
+      console.error("Erro ao decodificar o token:", error);
+    }
+  } else {
+    console.error("Token não encontrado na sessão.");
+  }
+    
+
 
   const TransacoesGraficos = dynamic<{ token: string; clientId: string }>(() => import('remoteNextApp/transacoesGrafico'), {
     ssr: false,
@@ -464,7 +485,7 @@ export default function Transacoes() {
       <CardTCF
         title="Resumo das Transações"
         body={
-          <TransacoesGraficos token={'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgwZWFjZWE3M2ZkMTg1OGIyMWJlMzQiLCJpYXQiOjE3MzY1MDE5NzAsImV4cCI6MTczNjU0NTE3MH0.X0TirzUcXaI7tKcDkCwvse0bIxaTAmWZZIf9Vz-LYfE'} clientId={'6780eacea73fd1858b21be34'} />
+          <TransacoesGraficos token={token} clientId={'6780eacea73fd1858b21be34'} />
         }
       />
     </>
