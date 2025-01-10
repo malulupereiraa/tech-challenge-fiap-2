@@ -5,7 +5,7 @@ import axios from "axios";
 // Importação dinâmica para evitar problemas com SSR
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const BarChart = () => {
+const BarChart = ({ token, clientId }: { token: string; clientId: string }): JSX.Element => {
   const [chartData, setChartData] = useState<{
     categories: string[];
     series: { name: string; data: number[] }[];
@@ -17,33 +17,36 @@ const BarChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzdjNmY4NDU1Mjc0ZGJlMTVkYjAyOWQiLCJpYXQiOjE3MzYyMDgyNjYsImV4cCI6MTczNjI1MTQ2Nn0.CXGY4Sk2r0uunfxsOS4vldgJBKhFKwYMbrCv4VbYPdI";
-        const response = await axios.get("/api/users/transactions", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    
-        const data = response.data;
-        // Processar os dados para agrupar por tipo de transação e mês
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${clientId}/transactions`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = response.data.result;
+
+        // Agrupar dados por tipo de transação e mês
         const groupedData: Record<string, Record<string, number>> = {};
 
         data.forEach((item: any) => {
           const date = new Date(item.date);
-          const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; // YYYY-MM
+          const month = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+          ).padStart(2, "0")}`; // Formato: YYYY-MM
           const transactionType = item.transactionType;
 
-          // Inicializar o grupo, se necessário
           if (!groupedData[transactionType]) {
             groupedData[transactionType] = {};
           }
 
-          // Somar os valores por mês e tipo
           groupedData[transactionType][month] =
             (groupedData[transactionType][month] || 0) + item.amount;
         });
 
-        // Extrair os meses únicos
+        // Extrair e ordenar os meses únicos
         const allMonths = Array.from(
           new Set(
             data.map((item: any) =>
@@ -54,7 +57,7 @@ const BarChart = () => {
           )
         ).sort();
 
-        // Construir as séries do gráfico
+        // Construir séries para o gráfico
         const series = Object.keys(groupedData).map((transactionType) => ({
           name: transactionType,
           data: allMonths.map((month) => groupedData[transactionType][month] || 0),
@@ -75,17 +78,15 @@ const BarChart = () => {
   const options = {
     chart: {
       type: "bar",
-      stacked: false, // Barras empilhadas
+      stacked: false,
       toolbar: {
-        show: false, // Esconde o menu superior do gráfico
+        show: false,
       },
-      offsetX: 0,
-      offsetY: 0, 
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        barHeight: "80%", // Reduz a altura das barras
+        columnWidth: "60%",
       },
     },
     xaxis: {
@@ -94,25 +95,23 @@ const BarChart = () => {
         text: "Mês",
       },
       labels: {
-        rotate: -45, // Ajusta o ângulo das labels para economizar espaço
+        rotate: -45,
         style: {
-          fontSize: "10px", // Reduz o tamanho da fonte
+          fontSize: "12px",
         },
       },
     },
     yaxis: {
       title: {
-        text: "Valores Totais",
+        text: "Valores Totais (R$)",
       },
       labels: {
-        style: {
-          fontSize: "10px", // Reduz o tamanho da fonte
-        },
+        formatter: (value: number) => `R$ ${value.toFixed(2)}`,
       },
     },
     legend: {
       position: "top" as "top",
-      fontSize: "10px",
+      fontSize: "12px",
     },
     tooltip: {
       y: {
@@ -122,8 +121,8 @@ const BarChart = () => {
   };
 
   return (
-    <div>
-      <Chart options={options} series={chartData.series} type="bar" height="300" />
+    <div style={{ backgroundColor: "#BDDCE3", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
+      <Chart options={options} series={chartData.series} type="bar" height="400" width="500" />
     </div>
   );
 };

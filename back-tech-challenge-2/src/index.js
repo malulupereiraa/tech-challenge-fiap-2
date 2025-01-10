@@ -13,7 +13,7 @@ connectDB();
 
 const cors = require('cors');
 const corsOptions ={
-    origin:'http://localhost:3001', 
+    origin: ['http://localhost:3001', 'http://localhost:3002'],
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }

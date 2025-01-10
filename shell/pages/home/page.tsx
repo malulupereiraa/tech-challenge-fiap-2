@@ -107,6 +107,7 @@ export default function Home() {
       if (session === undefined) return;
       const token: string = session?.user.result.token;
       const user: any = jwtDecode(token);
+      console.log('user', user);
       const formattedFormData: any = {
         ...formData,
         userId: user.userId,
@@ -274,8 +275,8 @@ export default function Home() {
           </Col>
         </Row>
 
-        <Graficos />
-
+          <Graficos />
+    
       </Col>
       <Col xs={12} sm={12} md={4} lg={4} xl={4}>
         <Row>

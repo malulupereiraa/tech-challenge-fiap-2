@@ -22,7 +22,8 @@ const nextConfig = {
       exposes: {
         "./app": "./pages/index.tsx",
         "./widgets": "./pages/widgets/index.tsx",
-        "./areaGrafico": './pages/graficos/area/index.tsx'
+        "./areaGrafico": './pages/graficos/area/index.tsx',
+        "./transacoesGrafico": './pages/graficos/transacoes/index.tsx'
       },
       extraOptions: {}, // Add appropriate options here
     };

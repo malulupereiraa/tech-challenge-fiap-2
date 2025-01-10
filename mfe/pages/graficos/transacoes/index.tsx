@@ -3,17 +3,13 @@ import React from "react";
 import DonutChart from "./donut";
 import BarChart from "./bar";
 
-export default function TransacoesGraficos() {
+export default function TransacoesGraficos({ token, clientId }: { token: string; clientId: string }): JSX.Element {
     return (
-        <>
+        <>  
+        
             <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                <div style={{ flex: "1 1 100%", maxWidth: "100%" }}>
-
-                    <DonutChart></DonutChart>
-
-                    <BarChart></BarChart>
-
-                </div>
+                <DonutChart token={token} clientId={clientId} ></DonutChart>
+                <BarChart token={token} clientId={clientId}></BarChart>
             </div>
 
         </>

@@ -2,32 +2,45 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import axios from "axios";
 
+// Importação dinâmica para evitar problemas com SSR
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const DonutChart = () => {
-  const [chartData, setChartData] = useState<{ labels: string[]; series: number[] }>({
+const DonutChart = ({ token, clientId }: { token: string; clientId: string }): JSX.Element => {
+  const [chartData, setChartData] = useState<{
+    labels: string[];
+    series: number[];
+  }>({
     labels: [],
     series: [],
   });
 
   useEffect(() => {
-  
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/users/transactions"); 
-        const data = response.data;
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${clientId}/transactions`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        // Processar os dados para agrupar por tipo de transação
-        const groupedData = data.reduce((acc: any, item: any) => {
-          const type = item.transactionType || "Outros";
-          acc[type] = (acc[type] || 0) + item.amount;
-          return acc;
-        }, {});
+        const data = response.data.result;
 
-        // Extrair rótulos e séries
+        // Agrupar dados por tipo de transação
+        const groupedData = data.reduce(
+          (acc: Record<string, number>, item: any) => {
+            const type = item.transactionType || "Outros";
+            acc[type] = (acc[type] || 0) + item.amount;
+            return acc;
+          },
+          {}
+        );
+
+        // Extrair labels e valores (series)
         const labels = Object.keys(groupedData);
         const series = Object.values(groupedData);
-        
 
         setChartData({ labels, series });
       } catch (error) {
@@ -39,6 +52,9 @@ const DonutChart = () => {
   }, []);
 
   const options = {
+    chart: {
+      type: "donut",
+    },
     labels: chartData.labels,
     legend: {
       position: "bottom",
@@ -48,12 +64,18 @@ const DonutChart = () => {
         formatter: (value: number) => `R$ ${value.toFixed(2)}`,
       },
     },
-    
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "70%", // Ajuste o tamanho interno do donut
+        },
+      },
+    },
   };
 
   return (
-    <div>
-      <Chart options={options} series={chartData.series} type="pie" width="380" />
+    <div style={{ backgroundColor: "#BDDCE3", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
+      <Chart options={options} series={chartData.series} type="donut" width="500" />
     </div>
   );
 };

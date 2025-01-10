@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Spinner } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import {
@@ -26,6 +26,7 @@ import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import router from "next/router";
 import useTransactionsService from "@/@core/services/api-node/transactions.service";
+import dynamic from "next/dynamic";
 
 export default function Transacoes() {
   const [transactions, setTransactions] = useState<any>([]);
@@ -45,6 +46,28 @@ export default function Transacoes() {
   const axiosHookHandler: any = useAxiosAuth();
 
   const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
+
+  const TransacoesGraficos = dynamic<{ token: string; clientId: string }>(() => import('remoteNextApp/transacoesGrafico'), {
+    ssr: false,
+    loading: () => (
+      <Row>
+        <Col
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          className=" d-flex justify-content-center"
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="secondary"
+            size="sm"
+          />
+        </Col>
+      </Row>
+    ),
+  });
 
   const handleDeleteClose = () => {
     setIsModalOpen(false);
@@ -436,6 +459,13 @@ export default function Transacoes() {
         type="delete"
         onCloseAction={handleDeleteClose}
         onSubmitAction={handleCloseDeleteSubmit}
+      />
+
+      <CardTCF
+        title="Resumo das Transações"
+        body={
+          <TransacoesGraficos token={'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzgwZWFjZWE3M2ZkMTg1OGIyMWJlMzQiLCJpYXQiOjE3MzY1MDE5NzAsImV4cCI6MTczNjU0NTE3MH0.X0TirzUcXaI7tKcDkCwvse0bIxaTAmWZZIf9Vz-LYfE'} clientId={'6780eacea73fd1858b21be34'} />
+        }
       />
     </>
   );
