@@ -18,7 +18,7 @@ const BarChart = ({ token, clientId }: { token: string; clientId: string }): JSX
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/users/${clientId}/transactions`,
+          `${process.env.NEXTAUTH_URL}/api/users/${clientId}/transactions`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
