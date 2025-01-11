@@ -122,7 +122,7 @@ const BarChart = ({ token, clientId }: { token: string; clientId: string }): JSX
 
   return (
     <div style={{ backgroundColor: "#BDDCE3", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
-      <Chart options={options} series={chartData.series} type="bar" height="400" width="500" />
+      <Chart options={options} series={chartData.series} type="bar" height="300" width="400" />
     </div>
   );
 };

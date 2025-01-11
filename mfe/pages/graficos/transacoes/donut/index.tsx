@@ -75,7 +75,7 @@ const DonutChart = ({ token, clientId }: { token: string; clientId: string }): J
 
   return (
     <div style={{ backgroundColor: "#BDDCE3", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
-      <Chart options={options} series={chartData.series} type="donut" width="500" />
+      <Chart options={options} series={chartData.series} type="donut" width="400" />
     </div>
   );
 };
