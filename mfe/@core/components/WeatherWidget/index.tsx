@@ -2,7 +2,6 @@
 
 import { BackgroundContainer } from "./WeatherWidget.styles";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 import axios from "axios";
 
@@ -16,28 +15,47 @@ export default function WeatherWidget() {
   const AllowLocAndViewWeather = () => {
     if (!location) {
       return (
-        <>
-          Habilite sua localização no browser para que possa ver as condições de
-          tempo.
-        </>
+        <div id="habilitar-local-container" className="infos-containers">
+          <p>
+            Habilite sua localização para que possa ver as condições de tempo.
+          </p>
+        </div>
       );
     } else if (!weather) {
-      return <>Buscando o informações sobre o clima...</>;
+      return (
+        <div id="habilitar-local-container" className="infos-containers">
+          Buscando o informações sobre o clima...;
+        </div>
+      );
     } else {
       return (
         <>
-          <div id="local-temp-container" className="infos-containers">
-              <p>{weather.name}</p>
-              <h4>{weather.main.temp.toFixed(1)}<span>°C</span></h4>
-          </div>
-          <div id="desc-info-container" className="infos-containers">
-            <div id="description-container">
-              <p>{weather.weather[0].description}</p>
+          <div id="tit-local-temp-container">
+            <div>
+              <h3>O TEMPO</h3>
+              <h4 style={{ lineHeight: 0.8 }}>AGORA</h4>
+              <div id="description-container">
+                <p>{weather.weather[0].description}</p>
+              </div>
             </div>
-            <p>Temperatura máxima: {weather.main.temp_max.toFixed(1)}°C</p>
-            <p>Temperatura mínima: {weather.main.temp_min.toFixed(1)}°C</p>
-            <p>Pressão atmosférica: {weather.main.pressure} hPa</p>
-            <p>Umidade: {weather.main.humidity}%</p>
+            <div id="local-temp-container" className="infos-containers">
+              <p>{weather.name}</p>
+              <h4>
+                {weather.main.temp.toFixed(1)}
+                <span> °C</span>
+              </h4>
+            </div>
+          </div>
+          <div className="espaçador-vert"></div>
+          <div id="desc-info-container" className="infos-containers">
+            <div>
+              <p>Temp. max: {weather.main.temp_max.toFixed(1)}°C</p>
+              <p>Temp. min: {weather.main.temp_min.toFixed(1)}°C</p>
+            </div>
+            <div>
+              <p>Pres atm.: {weather.main.pressure} hPa</p>
+              <p>Umidade: {weather.main.humidity}%</p>
+            </div>
           </div>
         </>
       );
@@ -45,7 +63,6 @@ export default function WeatherWidget() {
   };
 
   const getWeather = async (lat: number, long: number) => {
-    setLoading(true);
     try {
       const response = await axios.get(
         "http://api.openweathermap.org/data/2.5/weather",
@@ -64,9 +81,8 @@ export default function WeatherWidget() {
     } catch (error) {
       console.error("Erro ao buscar dados do clima:", error);
     }
-
-    setLoading(false);
   };
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       getWeather(position.coords.latitude, position.coords.longitude);
@@ -76,8 +92,7 @@ export default function WeatherWidget() {
 
   return (
     <BackgroundContainer>
-      <h3>O TEMPO AGORA</h3>
-      <div id="info-weather-container">
+      <div id="gradiente">
         <AllowLocAndViewWeather />
       </div>
     </BackgroundContainer>
