@@ -10,6 +10,7 @@ const AppComponent = dynamic(() => import("remoteNextApp/app"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
+
 export default function Home()  {
   return (
     <Container fluid>
