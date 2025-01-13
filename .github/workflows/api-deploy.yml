@@ -1,0 +1,45 @@
+name: 'API: Build and Deploy to GKE'
+
+on:
+  push:
+    branches: ["thiago/docker-compose-and-gke-configurations"]
+
+env:
+  APP: 'api'
+  GKE_SA: ${{ secrets.GKE_SA }}
+  CLUSTER: 'fiap-tech-challenge-fase-2'
+  PROJECT_ID: 'fiap-fe-tech-challenge-fase-2'
+  SUBDOMAIN: 'fase-2-api.challengecoders.com'
+
+jobs:
+  setup-build-publish-deploy:
+    name: 'Deploy'
+    runs-on: 'ubuntu-latest'
+    environment: 'production'
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+      with:
+        service_account_key: ${{ secrets.GKE_SA }}
+        project_id: ${{ env.PROJECT_ID }}
+
+    - uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: ${{ secrets.GKE_SA }}
+
+    - name: Install gke-gcloud-auth-plugin
+      run: gcloud components install gke-gcloud-auth-plugin
+
+    - name: Deploy
+      run: |-
+        export TAG=${GITHUB_SHA}
+        export DOCKER_IMAGE="gcr.io/fiap-fe-tech-challenge-fase-2/${APP}:${TAG}"
+
+        ./deploy $APP $TAG

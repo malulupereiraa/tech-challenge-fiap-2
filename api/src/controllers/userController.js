@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -39,7 +39,7 @@ const getUsers = async (req, res) => {
 
 // Get a single user by ID
  const getUserByID = async (req, res) => {
-   const { id } = req.params;   
+   const { id } = req.params;
   try {
     const user = await User.findById({ _id: id });
     if (!user) {
@@ -110,14 +110,13 @@ const deleteUser = async (req, res) => {
 
 // Login user
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Dados Inválidos!' });
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) return res.status(400).json({ message: 'Dados Inválidos!' });
-    console.log(user)
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '12h' });
       res.json({
@@ -132,14 +131,15 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get Token
-const getToken = (token) =>{
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET)
-        return decoded
-    } catch (error) {
-        return null
-    }
-}
+// TODO: Checar se a função abaixo é necessária.
+// // Get Token
+// const getToken = (token) =>{
+//     try {
+//         const decoded = jwt.verify(token, JWT_SECRET)
+//         return decoded
+//     } catch (error) {
+//         return null
+//     }
+// }
 
-module.exports = { registerUser, getUsers, getUserByID, getUserByEmail, updateUser, deleteUser, loginUser, getToken };
+module.exports = { registerUser, getUsers, getUserByID, getUserByEmail, updateUser, deleteUser, loginUser }; // , getToken
