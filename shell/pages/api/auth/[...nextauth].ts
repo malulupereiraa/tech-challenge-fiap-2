@@ -4,19 +4,8 @@ import NextAuth from "next-auth";
 import axios from "axios";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
- 
-// Function to convert an object to URL-encoded form data
-function toFormData(obj: any) {
-  const formBody = [];
-  for (const property in obj) {
-    const encodedKey = encodeURIComponent(property);
-    const encodedValue = encodeURIComponent(obj[property]);
-    formBody.push(`${encodedKey}=${encodedValue}`);
-  }
-  return formBody.join("&");
-}
 
-export const authOptions: NextAuthOptions = {
+export const authOptions : NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -30,16 +19,20 @@ export const authOptions: NextAuthOptions = {
         if (!credentials) {
           return null;
         }
+
         const data = {
           email: credentials.email,
           password: credentials.password,
         };
+
+        const api_url =
+          process.env.NEXTAUTH_URL ||
+          process.env.NEXT_PUBLIC_NEXTAUTH_URL
+
         try {
-          const res: any = await axios.post(
-            `${process.env.NEXTAUTH_URL}/api/users/login`,
-            data
-          );
+          const res: any = await axios.post(`${api_url}/api/users/login`, data);
           const resData = res.data;
+
           if (resData) {
             return resData;
           } else {
@@ -69,9 +62,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token, user }) {
       session.user = token as any;
       return session;
-    },
-  },
+    }
+  }
 };
 
 export default NextAuth(authOptions)
-

@@ -30,15 +30,15 @@ import { useEffect, useState } from "react";
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
 ) {
+  const handleValue = () => `${Math.round(props.value)}%`;
+
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Box sx={{ width: "100%", mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" sx={{ color: "#ffffff" }}>{`${Math.round(
-          props.value
-        )}%`}</Typography>
+        <Typography variant="body2" sx={{ color: "#ffffff" }}>{handleValue()}</Typography>
       </Box>
     </Box>
   );

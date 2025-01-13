@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import SelectWidgetsForm from "../forms/Select-Widgets";
 import CreditCardTCF from "../CreditCard";
 import HeaderContainer from "./HeaderContainer";
+import WeatherWidget from "../WeatherWidget";
 
 const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
   loading,
@@ -79,7 +80,7 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
           )}
         </Col>
         <Col xs={12} sm={12} md={12} lg={12}>
-          {widgetsState.weather && <div>Weather</div>}
+        {widgetsState.weather && <WeatherWidget />}
         </Col>
       </Row>
     );
