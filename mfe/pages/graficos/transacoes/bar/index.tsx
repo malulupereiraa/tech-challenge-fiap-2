@@ -17,8 +17,10 @@ const BarChart = ({ token, clientId }: { token: string; clientId: string }): JSX
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("NEXT_PUBLIC_NEXTAUTH_URL:", process.env.NEXT_PUBLIC_NEXTAUTH_URL);
+
         const response = await axios.get(
-          `${process.env.NEXTAUTH_URL}/api/users/${clientId}/transactions`,
+          `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/users/${clientId}/transactions`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -122,7 +124,7 @@ const BarChart = ({ token, clientId }: { token: string; clientId: string }): JSX
 
   return (
     <div style={{ backgroundColor: "#BDDCE3", padding: "20px", borderRadius: "10px", marginBottom: "20px" }}>
-      <Chart options={options} series={chartData.series} type="bar" height="300" width="400" />
+      <Chart options={options} series={chartData.series} type="bar" height="400" width="500" />
     </div>
   );
 };
