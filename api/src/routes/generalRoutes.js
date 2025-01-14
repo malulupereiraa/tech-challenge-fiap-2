@@ -1,8 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser, getUsers, getUserByID, updateUser, getUserByEmail, deleteUser } = require('../controllers/userController');
-const { createTransaction, getBankStatement, getTransactions, getTransactionById, deleteTransaction, updateTransaction } = require('../controllers/transactionController');
+const multer = require('multer');
 const jwtAuth = require('../middleware/jwtAuth');
+const upload = multer({ dest: 'tmp/csv/' });
+
+
+const {
+  registerUser,
+  loginUser,
+  getUsers,
+  getUserByID,
+  updateUser,
+  getUserByEmail,
+  deleteUser,
+} = require('../controllers/userController');
+
+const {
+  createTransaction,
+  getBankStatement,
+  getTransactions,
+  getTransactionById,
+  deleteTransaction,
+  updateTransaction,
+  importTransactions
+} = require('../controllers/transactionController');
 
 // USERS ROUTES
 
@@ -240,15 +261,15 @@ router.get('/transactions/:id', jwtAuth, getTransactionById)
  *           schema:
  *             type: object
  *             properties:
- *              userId: 
+ *              userId:
  *                  type: string
- *              amount: 
+ *              amount:
  *                 type: number
- *              transactionType: 
+ *              transactionType:
  *                  type: string
- *              description: 
+ *              description:
  *                  type: string
- *              date: 
+ *              date:
  *                  type: string
  *     security:
  *       - bearerAuth: []
@@ -280,15 +301,15 @@ router.post('/transactions', jwtAuth, createTransaction);  // Create transaction
  *           schema:
  *             type: object
  *             properties:
- *              userId: 
+ *              userId:
  *                  type: string
- *              amount: 
+ *              amount:
  *                 type: number
- *              transactionType: 
+ *              transactionType:
  *                  type: string
- *              description: 
+ *              description:
  *                  type: string
- *              date: 
+ *              date:
  *                  type: string
  *     responses:
  *       201:
@@ -317,5 +338,29 @@ router.put('/transactions/:id', jwtAuth, updateTransaction)
  */
 router.delete('/transactions/:id', jwtAuth, deleteTransaction)
 
+/**
+ * @swagger
+ *  /api/users/transactions/import:
+ *   post:
+ *     summary: Importa transações de um arquivo
+ *     tags: [Transactions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                  type: string
+ *               file:
+ *                  type: file
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Transações Importadas com Sucesso
+ */
+router.post('/transactions/import', upload.single('file'), jwtAuth, importTransactions);
 
 module.exports = router;
