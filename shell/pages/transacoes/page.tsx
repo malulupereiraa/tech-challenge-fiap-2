@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Spinner } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import transactionTypeDictionary from "../../@core/utils/transaction-type-dictionary";
@@ -14,12 +14,20 @@ import ModalTCF from "../../@core/components/ui/Modal";
 import ButtonTCF from "../../@core/components/ui/Button";
 import DatatableTCF from "../../@core/components/ui/Datatable";
 import TransacaoForm from "../../@core/components/forms/Transacao";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import router from "next/router";
 import { useSelector } from "react-redux";
+import dynamic from "next/dynamic";
+
+interface CustomJwtPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
 
 export default function Transacoes() {
   const [transactions, setTransactions] = useState<any>([]);
@@ -38,6 +46,47 @@ export default function Transacoes() {
   const [dataToForm, setDataToForm] = useState<any>();
   const axiosHookHandler: any = useAxiosAuth();
   const { user } = useSelector((state: any) => state.user);
+
+
+  const { data: session } = useSession();
+  const token = session?.user?.result?.token;
+  let userId = "";
+
+  if (token) {
+    try {
+      const decodedToken = jwtDecode<CustomJwtPayload>(token);
+      userId = decodedToken.userId;
+    } catch (error) {
+      console.error("Erro ao decodificar o token:", error);
+    }
+  } else {
+    console.error("Token não encontrado na sessão.");
+  }
+
+
+  // @ts-ignore
+  const TransacoesGraficos = dynamic<{ token: string; clientId: string }>(() => import('remoteNextApp/transacoesGrafico'), {
+    ssr: false,
+    loading: () => (
+      <Row>
+        <Col
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          className=" d-flex justify-content-center"
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="secondary"
+            size="sm"
+          />
+        </Col>
+      </Row>
+    ),
+  });
+
 
   const handleDeleteClose = () => {
     setIsModalOpen(false);
@@ -432,6 +481,14 @@ export default function Transacoes() {
         onCloseAction={handleDeleteClose}
         onSubmitAction={handleCloseDeleteSubmit}
       />
+
+      <CardTCF
+        title="Resumo das Transações"
+        body={
+          <TransacoesGraficos token={token} clientId={userId} />
+        }
+      />
+
     </>
   );
 }
