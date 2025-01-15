@@ -27,7 +27,6 @@ const SelectWidgetsForm: React.FC<SelectWidgetsFormProps> = ({
   });
 
   useEffect(() => {
-    console.log(widgetsState);
     setLoading(true);
     !widgetsState
       ? ((initialValue.current = {
@@ -36,7 +35,6 @@ const SelectWidgetsForm: React.FC<SelectWidgetsFormProps> = ({
         }),
         setLoading(false))
       : ((initialValue.current = widgetsState), setLoading(false));
-    console.log(initialValue.current);
   }, [widgetsState]);
   return (
     <>

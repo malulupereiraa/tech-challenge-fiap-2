@@ -4,8 +4,22 @@ import React from "react";
 interface WidgetsProps {
   loading?: boolean;
   userSession?: any;
+  transactions?: any;
+  setWidgets: (value: any) => void;
 }
 
-export default function Widgets({ loading, userSession }: WidgetsProps) {
-  return <WidgetCardTCF loading={loading} userSession={userSession} />;
+export default function Widgets({
+  loading,
+  userSession,
+  transactions,
+  setWidgets,
+}: WidgetsProps) {
+  return (
+    <WidgetCardTCF
+      loading={loading}
+      userSession={userSession}
+      transactions={transactions}
+      setWidgets={setWidgets}
+    />
+  );
 }

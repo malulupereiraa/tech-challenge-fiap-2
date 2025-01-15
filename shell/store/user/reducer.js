@@ -4,20 +4,19 @@ const userInitialState = {
   user: {
     token: "",
     username: "",
-    widgets: [],
+    widgets: {},
   },
 };
 
 export default function userReducer(state = userInitialState, action) {
   switch (action.type) {
     case userActionTypes.SET_USER:
-      console.log(action);
       return {
         ...state,
         user: {
           token: action.user ? action.user.token : "",
           username: action.user ? action.user.username : "",
-          widgets: action.user ? action.user.widgets : [],
+          widgets: action.user ? action.user.widgets : {},
         },
       };
     case userActionTypes.LOGOUT:
@@ -26,7 +25,7 @@ export default function userReducer(state = userInitialState, action) {
         user: {
           token: "",
           username: "",
-          widgets: [],
+          widgets: {},
         },
       };
     default:
