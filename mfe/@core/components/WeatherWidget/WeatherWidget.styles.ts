@@ -7,7 +7,7 @@ export const BackgroundContainer = styled.div`
   align-items: center;
   min-width: 315px;
   max-width: 450px;
-  height: 280px;
+  min-height: 280px;
   border-radius: 12px;
   margin-top: 30px;
   background: url("/noaa-p9BRX1mBfe4-unsplash.png") no-repeat;
@@ -26,7 +26,6 @@ export const BackgroundContainer = styled.div`
     height: 100%;
     min-width: 315px;
     max-width: 450px;
-    height: 280px;
     background: linear-gradient(to top, #004d61, transparent 60%, #004d61);
     padding: 20px;
     border-radius: 12px;
@@ -66,6 +65,7 @@ export const BackgroundContainer = styled.div`
     max-height: 90%;
     padding: 8px;
   }
+
   #info-weather-container {
     display: flex;
     justify-content: space-between;
@@ -73,10 +73,10 @@ export const BackgroundContainer = styled.div`
     max-height: 90%;
     padding: 8px;
   }
+
   #description-container p {
     color: #fff700;
   }
-
   #local-temp-container {
     display: flex;
     flex-direction: column;
