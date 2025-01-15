@@ -5,28 +5,16 @@ import axios from "axios";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 
-// TODO: Checar se a função abaixo é necessária.
-// // Function to convert an object to URL-encoded form data
-// function toFormData(obj: any) {
-//   const formBody = [];
-//   for (const property in obj) {
-//     const encodedKey = encodeURIComponent(property);
-//     const encodedValue = encodeURIComponent(obj[property]);
-//     formBody.push(`${encodedKey}=${encodedValue}`);
-//   }
-//   return formBody.join("&");
-// }
-
 export const authOptions : NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: {label:"Email", type: "text", placeholder: "email"},
-        password: {label: "Password", type: "password", placeholder: "*****"},
+        email: { label: "Email", type: "text", placeholder: "email" },
+        password: { label: "Password", type: "password", placeholder: "*****" },
       },
 
-      authorize: async(credentials, req) => {
+      authorize: async (credentials, req) => {
         // Include hidden values here
         if (!credentials) {
           return null;
@@ -48,25 +36,28 @@ export const authOptions : NextAuthOptions = {
           if (resData) {
             return resData;
           } else {
-            console.error('Authorization failed:', resData);
+            console.error("Authorization failed:", resData);
             return null;
           }
         } catch (error) {
-          console.error('Authorization error:', error);
+          console.error("Authorization error:", error);
           return null;
         }
-      }
-    })
+      },
+    }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/',
-    error: '/auth/error',
+    signIn: "/",
+    error: "/auth/error",
   },
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({token, user}){
-      return {...token, ...user}
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        return { ...token, ...session?.user };
+      }
+      return { ...token, ...user };
     },
     async session({ session, token, user }) {
       session.user = token as any;

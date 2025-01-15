@@ -3,8 +3,9 @@
 import styled from 'styled-components';
 
 export default styled.section`
-  background-color: #FFFFFF;
-  padding: 30px;
+  background-color: #ffffff;
+  padding-top: 30px;
+  padding-bottom: 30px;
   border-radius: 12px;
   min-width: 315px;
 
