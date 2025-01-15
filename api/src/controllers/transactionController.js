@@ -1,3 +1,5 @@
+const csv = require('csv-parser');
+const fs = require('fs');
 const Transaction = require("../models/transaction");
 const User = require("../models/User");
 
@@ -7,6 +9,7 @@ const createTransaction = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+
     if (!user)
       return res.status(404).json({ message: "Usuário não Encontrado..." });
 
@@ -30,6 +33,7 @@ const getTransactions = async (req, res) => {
   const { userId } = req.params;
   try {
     const transactions = await Transaction.find();
+
     const transactionsFiltered = transactions.filter(
       (transaction) => transaction.user == userId
     );
@@ -95,9 +99,51 @@ const deleteTransaction = async (req, res) => {
 const getBankStatement = async (req, res) => {
   try {
     const transactions = await Transaction.find({ user: req.user.userId });
+
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ message: "Erro ao Buscar Transações..." });
+  }
+};
+
+// Create a transaction
+const importTransactions = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user)
+      return res.status(404).json({ message: "Usuário não Encontrado..." });
+
+    const results = [];
+
+    fs.createReadStream(req.file.path)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', () => {
+        results.forEach((transactionData) => {
+          const transaction = new Transaction({
+            user: userId,
+            amount: transactionData.valor,
+            transactionType: transactionData.tipo_de_transacao?.toLowerCase(),
+            description: transactionData.descricao,
+            date: transactionData.data
+          });
+
+          transaction.save();
+        });
+      });
+
+    res.status(201).json({
+      message: "Transações importadas com sucesso...",
+      userId: user.id
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erro ao Importar Transações...",
+      error: error.message
+    });
   }
 };
 
@@ -108,4 +154,5 @@ module.exports = {
   updateTransaction,
   deleteTransaction,
   getBankStatement,
+  importTransactions
 };
