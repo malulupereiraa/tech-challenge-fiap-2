@@ -409,6 +409,7 @@ export default function Transacoes() {
         type={'home-modal'}
         hasFooter={true}
         onCloseAction={handleModalClose}
+        onSubmitAction={fetchTransactions}
       />
     </>
   );
