@@ -48,8 +48,6 @@ const CreditCardTCF: React.FC<CreditCardProps> = ({ user, transactions }) => {
   const [limitAvailable, setLimitAvailable] = useState<number | undefined>(
     1000
   );
-  console.log(user);
-  console.log(transactions);
   const handleUsedValue = () => {
     if (transactions && transactions.length > 0) {
       const usedValue = transactions.reduce((acc: number, transaction: any) => {
