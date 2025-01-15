@@ -1,0 +1,24 @@
+# This file configures the hello-world app which serves public web traffic.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $APP
+  labels:
+    app: $APP
+spec:
+  selector:
+    matchLabels:
+      app: $APP
+  template:
+    metadata:
+      labels:
+        app: $APP
+    spec:
+      containers:
+      - name: $APP
+        image: $DOCKER_IMAGE
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"

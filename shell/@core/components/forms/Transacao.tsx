@@ -93,9 +93,12 @@ const TransacaoForm: React.FC<TransacaoFormProps> = ({
                         onChange={handleChange}
                         value={values.transactionType}
                         disabled={isView}
-                        isValid={touched.transactionType && !errors.transactionType}
+                        isValid={
+                          touched.transactionType && !errors.transactionType
+                        }
                       >
                         <option>Selecione o Tipo de Transação</option>
+                        <option value="credito">Crédito</option>
                         <option value="deposito">Depósito</option>
                         <option value="debito">Débito</option>
                         <option value="pix">PIX</option>
@@ -137,10 +140,15 @@ const TransacaoForm: React.FC<TransacaoFormProps> = ({
                         controlId="exampleForm.Datepicker"
                       >
                         <FormLabelStrong>Data</FormLabelStrong>
-                        <DatePicker name="date" selected={startDate} disabled={isView} onChange={(date: any) => {
-                          setStartDate(date)
-                          values.date = date
-                        }} />
+                        <DatePicker
+                          name="date"
+                          selected={startDate}
+                          disabled={isView}
+                          onChange={(date: any) => {
+                            setStartDate(date);
+                            values.date = date;
+                          }}
+                        />
                         {errors.date && touched.date && (
                           <ErrorMessage>{errors.date as string}</ErrorMessage>
                         )}

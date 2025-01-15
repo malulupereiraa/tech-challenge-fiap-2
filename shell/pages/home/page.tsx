@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,19 +7,24 @@
 import { Row, Col, Spinner } from "react-bootstrap";
 import { useCallback, useEffect, useState } from "react";
 import HomeStatement from "./page.home-statement";
-import { createTransaction } from "../../@core/services/transaction_service";
 import { Transaction } from "../../@core/types/transaction";
 import ToastTCF from "../../@core/components/Toast";
 import CardSaldoComponent from "../../@core/components/ui/CardSaldo/CardSaldo";
 import CardTCF from "../../@core/components/ui/Card";
 import TransacaoForm from "../../@core/components/forms/Transacao";
 import { jwtDecode } from "jwt-decode";
-import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import dynamic from "next/dynamic";
+import { useDispatch, useSelector } from "react-redux";
+import { returnUserData } from "@/store/user/action";
+import userService from "@/@core/services/api-node/user.service";
 
-export default function Home() {
+interface Props {
+  widgets: (value: any) => void;
+}
+
+export default function Home({ widgets }: Props) {
   const [valueToast, setShowToast] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [icon, setIcon] = useState<any>("");
@@ -26,17 +32,21 @@ export default function Home() {
   const [reloadStatement, setReloadStatement] = useState<boolean>(false);
   const [loadWidgets, setLoadWidgets] = useState<boolean>(false);
   const [balance, setBalance] = useState(0);
-  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
+  const [transactionsToMFE, setTransactionsToMFE] = useState<any>({});
+  const [widgetsToMFE, setWidgetsToMFE] = useState<any>({});
   const axiosHookHandler: any = useAxiosAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: any) => state.user);
 
   const handleTransacaoForm = useCallback(
     async (e: any, formData: any) => {
-      if (session === undefined) return;
-      const token: string = session?.user.result.token;
-      const user: any = jwtDecode(token);
+      e.preventDefault();
+      if (user.token === "") return;
+      const token: string = user.token;
+      const decodedUser: any = jwtDecode(token);
       const formattedFormData: any = {
         ...formData,
-        userId: user.userId,
+        userId: decodedUser.userId,
         description: "Transação Realizada na Home",
       };
       await transactionsService
@@ -85,7 +95,7 @@ export default function Home() {
       //     console.error(error);
       //   });
     },
-    [session]
+    [user]
   );
 
   useEffect(() => {
@@ -94,13 +104,20 @@ export default function Home() {
 
   const calculateBalance = (transactions: []) => {
     if (transactions === undefined) return;
+    setTransactionsToMFE(transactions);
     setBalance((_) => {
-      return transactions.reduce((sum, transaction: Transaction) => {
-        const amountMultiplier =
-          transaction.transactionType == "deposito" ? 1 : -1;
+      const transactionsFiltered: any = transactions.filter(
+        (transaction: any) => transaction.transactionType !== "credito"
+      );
+      return transactionsFiltered.reduce(
+        (sum: any, transaction: Transaction) => {
+          const amountMultiplier =
+            transaction.transactionType == "deposito" ? 1 : -1;
 
-        return sum + transaction.amount * amountMultiplier;
-      }, 0);
+          return sum + transaction.amount * amountMultiplier;
+        },
+        0
+      );
     });
   };
 
@@ -130,23 +147,79 @@ export default function Home() {
   const WidgetComponentCaller = ({
     loadingComponent,
     userSession,
+    transactions,
+    setWidgets,
   }: {
     loadingComponent: boolean;
     userSession: any;
+    transactions: any;
+    setWidgets: (value: any) => void;
   }) => {
     return (
-      // @ts-ignore
-      <WidgetsComponent loading={loadingComponent} userSession={userSession} /> // userSession pode ser passado como gerenciador de estados
+      <WidgetsComponent
+        // @ts-ignore
+        loading={loadingComponent}
+        userSession={userSession}
+        transactions={transactions}
+        setWidgets={setWidgets}
+      />
     );
   };
 
+  const updateUserWidgets = useCallback(async () => {
+    if (user.token === "" || Object.keys(widgetsToMFE).length === 0) return;
+    const token: string = user.token;
+    const decodedUser: any = jwtDecode(token);
+
+    const userId: any = { id: decodedUser.userId };
+    const formattedDataToUpdate: any = {
+      username: "",
+      email: "",
+      password: "",
+      widgets: widgetsToMFE,
+    };
+    await userService
+      .updateUser(axiosHookHandler, formattedDataToUpdate, userId)
+      .then(() => {
+        dispatch(
+          returnUserData({
+            ...user,
+            widgets: widgetsToMFE,
+          })
+        );
+        setShowToast(true);
+        setMessage("Widgets Atualizados com Sucesso");
+        setIcon("success");
+        setToastTitle("Sucesso!");
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+      })
+      .catch((error: any) => {
+        setShowToast(true);
+        setMessage(error.response.data.message);
+        setIcon("error");
+        setToastTitle("Erro!");
+        setTimeout(() => {
+          setShowToast(false);
+        }, 3000);
+        console.error(error.response.data.message);
+      });
+  }, [user, widgetsToMFE]);
+
   useEffect(() => {
-    if (session === undefined) return;
+    if (user.username === "") return;
+    updateUserWidgets();
+  }, [widgetsToMFE]);
+
+  useEffect(() => {
+    if (user.username === "") return;
     setLoadWidgets(true);
     setTimeout(() => {
       setLoadWidgets(false);
     }, 2000);
-  }, [session]);
+    widgets(widgetsToMFE);
+  }, [user]);
 
   return (
     <>
@@ -160,7 +233,7 @@ export default function Home() {
         <Row className="rowBalance">
           <Col xs={12} sm={12} md={12} lg={12}>
             <CardSaldoComponent
-              name={session && session.user.result.username}
+              name={user && user.username}
               balance={balance}
               showBalance={false}
             />
@@ -191,7 +264,9 @@ export default function Home() {
           <Col xs={12} sm={12} md={12} lg={12} className="mt-3">
             <WidgetComponentCaller
               loadingComponent={loadWidgets}
-              userSession={session}
+              userSession={user}
+              transactions={transactionsToMFE}
+              setWidgets={setWidgetsToMFE}
             />
           </Col>
         </Row>

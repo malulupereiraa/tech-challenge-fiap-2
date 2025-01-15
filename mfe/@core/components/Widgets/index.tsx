@@ -3,15 +3,26 @@ import { FiEdit3 } from "react-icons/fi";
 import Container from "./Container";
 import Button from "../ui/Button";
 import { Divider } from "@mui/material";
-import { OverlayTrigger, Placeholder, Tooltip } from "react-bootstrap";
+import {
+  Col,
+  OverlayTrigger,
+  Placeholder,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import { WidgetsCardProps } from "@/@core/props/widgets-card";
 import ModalTCF from "../ui/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectWidgetsForm from "../forms/Select-Widgets";
+import CreditCardTCF from "../CreditCard";
+import HeaderContainer from "./HeaderContainer";
+import WeatherWidget from "../WeatherWidget";
 
 const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
   loading,
   userSession,
+  transactions,
+  setWidgets,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [widgetsState, setWidgetsState] = useState<any>();
@@ -23,27 +34,31 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
 
   const placeholder = (): JSX.Element => {
     return (
-      <div className="section-placeholder">
-        {[1, 2].map((index: number) => (
-          <div key={index} className="section-item-placeholder">
-            <h6>
-              <Placeholder animation="wave">
-                <Placeholder xs={4} />
-              </Placeholder>
-            </h6>
-            <div>
-              <Placeholder animation="wave">
-                <Placeholder xs={12} />
-              </Placeholder>
-            </div>
-            <div>
-              <Placeholder animation="wave">
-                <Placeholder xs={8} />
-              </Placeholder>
-            </div>
+      <Row>
+        <Col xs={12} sm={12} md={12} lg={12}>
+          <div className="section-placeholder">
+            {[1, 2].map((index: number) => (
+              <div key={index} className="section-item-placeholder">
+                <h6>
+                  <Placeholder animation="wave">
+                    <Placeholder xs={4} />
+                  </Placeholder>
+                </h6>
+                <div>
+                  <Placeholder animation="wave">
+                    <Placeholder xs={12} />
+                  </Placeholder>
+                </div>
+                <div>
+                  <Placeholder animation="wave">
+                    <Placeholder xs={8} />
+                  </Placeholder>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </Col>
+      </Row>
     );
   };
 
@@ -51,25 +66,55 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
     setIsModalOpen(false);
   };
   const handleSubmit = async (value: any) => {
-    // console.log(value);
     setWidgetsState(value);
+    setWidgets(value);
     setIsModalOpen(false);
   };
 
   const handleWidgets = () => {
     return (
-      <div>
-        {widgetsState.card && <div>Card</div>}
-        {widgetsState.weather && <div>Weather</div>}
-      </div>
+      <Row>
+        <Col xs={12} sm={12} md={12} lg={12}>
+          {widgetsState.card && (
+            <CreditCardTCF user={userSession} transactions={transactions} />
+          )}
+        </Col>
+        <Col xs={12} sm={12} md={12} lg={12}>
+        {widgetsState.weather && <WeatherWidget />}
+        </Col>
+      </Row>
     );
   };
-  //   console.log(loading);
-  //   console.log(userSession);
+
+  useEffect(() => {
+    if (
+      userSession.widgets &&
+      Object.keys(userSession.widgets).length !== 0 &&
+      userSession.widgets.constructor === Object
+    ) {
+      if (
+        userSession.widgets.card !== false ||
+        userSession.widgets.weather !== false
+      ) {
+        setWidgetsState(userSession.widgets);
+      } else {
+        <Row>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <div className="text-center">
+              <h6>
+                Clique no Botão de Gerenciar, para Selecionar os seus Widgets!
+              </h6>
+            </div>
+          </Col>
+        </Row>;
+      }
+    }
+  }, [userSession]);
+
   return (
     <>
       <Container>
-        <header>
+        <HeaderContainer>
           <h3>Widgets</h3>
           <div className="actions">
             <OverlayTrigger
@@ -88,13 +133,23 @@ const WidgetCardTCF: React.FC<WidgetsCardProps> = ({
               </span>
             </OverlayTrigger>
           </div>
-        </header>
+        </HeaderContainer>
         <Divider />
-        {loading
-          ? placeholder()
-          : widgetsState
-          ? handleWidgets()
-          : "Clique no Botão de Gerenciar, para Selecionar os seus Widgets!"}
+        {loading ? (
+          placeholder()
+        ) : widgetsState ? (
+          handleWidgets()
+        ) : (
+          <Row>
+            <Col xs={12} sm={12} md={12} lg={12}>
+              <div className="text-center">
+                <h6>
+                  Clique no Botão de Gerenciar, para Selecionar os seus Widgets!
+                </h6>
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
       <ModalTCF
         title="Gerenciar Widgets"

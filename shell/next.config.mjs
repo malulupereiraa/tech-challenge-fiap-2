@@ -3,6 +3,8 @@
 /** @type {import('next').NextConfig} */
 import NextFederationPlugin from "@module-federation/nextjs-mf";
 
+const remoteNextAppUrl = process.env.REMOTE_NEXT_APP_URL || 'http://localhost:3001';
+
 const nextConfig = {
   compiler: {
     styledComponents: true,
@@ -14,7 +16,7 @@ const nextConfig = {
   webpack(config, options) {
     const { isServer } = options;
     const remotes = {
-      remoteNextApp: 'remoteNextApp@http://localhost:3002/_next/static/chunks/remoteEntry.js',
+      remoteNextApp: `remoteNextApp@${remoteNextAppUrl}/_next/static/chunks/remoteEntry.js`,
     };
     const federatedConfig = {
       name: "host",
@@ -31,5 +33,5 @@ const nextConfig = {
     return config;
   },
 };
-export default nextConfig;
 
+export default nextConfig;

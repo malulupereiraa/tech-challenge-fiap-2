@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next";
 
 import { Col, Row } from "react-bootstrap";
@@ -10,6 +12,9 @@ import { FloatButtonRow } from "@/@theme/custom/FloatButton";
 import { Fab, Tooltip } from "@mui/material";
 import { IoIosLogOut } from "react-icons/io";
 import router from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { returnUserData } from "@/store/user/action";
 
 export const metadata: Metadata = {
   title: "Bytebank - Transações",
@@ -23,7 +28,8 @@ export const dynamic = "force-dynamic";
 
 export default function RootLayout() {
   const { data: session } = useSession();
-  console.log(session); // é possível usar gerenciador de status aqui, para guardar o token e o nome do usuário logado
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: any) => state.user);
   const logout = () => {
     router.push("/");
     signOut({
@@ -31,9 +37,24 @@ export default function RootLayout() {
     });
   };
 
+  useEffect(() => {
+    if (session) {
+      dispatch(
+        returnUserData({
+          ...user,
+          token: session.user.result.token,
+          username: session.user.result.username,
+          widgets: session.user.result.widgets,
+        })
+      );
+    }
+  }, [session]);
+
   return (
     <>
-      <TransactionsHeader name={session && session.user.result.username} />
+      <TransactionsHeader
+        name={user && user.username !== "" && user.username}
+      />
       <Row>
         <div className="col-xs-12 col-sm-12 col-md-3 col-xl-2">
           <div className="d-flex flex-column align-items-center align-items-sm-start h-100">
