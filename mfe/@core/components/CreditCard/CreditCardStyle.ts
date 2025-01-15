@@ -24,7 +24,7 @@ export const Right = styled.div`
 `;
 
 export const Card = styled.div`
-  width: 450px;
+  width: 100%;
   height: 280px;
 
   perspective: 1000;
@@ -237,9 +237,13 @@ export const CardHolder = styled.div`
 `;
 
 export const CardLimitBar = styled.div`
-  width: 283px;
+  width: 190px;
 `;
 
 export const LabelLimit = styled.div`
   font-size: 12px;
+`;
+
+export const LabelLimitValue = styled.div`
+  font-size: 14px;
 `;

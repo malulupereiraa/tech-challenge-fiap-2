@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next";
 
@@ -38,7 +39,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (session) {
-      dispatch(returnUserData(session.user.result));
+      dispatch(
+        returnUserData({
+          ...user,
+          token: session.user.result.token,
+          username: session.user.result.username,
+          widgets: session.user.result.widgets,
+        })
+      );
     }
   }, [session]);
 
