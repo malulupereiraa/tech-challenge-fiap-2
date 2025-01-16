@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Spinner } from "react-bootstrap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import transactionTypeDictionary from "../../@core/utils/transaction-type-dictionary";
@@ -22,6 +22,14 @@ import router from "next/router";
 import useTransactionsService from "@/@core/services/api-node/transactions.service";
 import ModalUploadTransacoes from "./modalUpload";
 import { useSelector } from "react-redux";
+import dynamic from "next/dynamic";
+
+interface CustomJwtPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
 
 export default function Transacoes() {
   const [transactions, setTransactions] = useState<any>([]);
@@ -43,6 +51,47 @@ export default function Transacoes() {
 
   const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
   const { user } = useSelector((state: any) => state.user);
+
+
+  const { data: session } = useSession();
+  const token = session?.user?.result?.token;
+  let userId = "";
+
+  if (token) {
+    try {
+      const decodedToken = jwtDecode<CustomJwtPayload>(token);
+      userId = decodedToken.userId;
+    } catch (error) {
+      console.error("Erro ao decodificar o token:", error);
+    }
+  } else {
+    console.error("Token não encontrado na sessão.");
+  }
+
+
+  // @ts-ignore
+  const TransacoesGraficos = dynamic<{ token: string; clientId: string }>(() => import('remoteNextApp/transacoesGrafico'), {
+    ssr: false,
+    loading: () => (
+      <Row>
+        <Col
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          className=" d-flex justify-content-center"
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="secondary"
+            size="sm"
+          />
+        </Col>
+      </Row>
+    ),
+  });
+
 
   const handleDeleteClose = () => {
     setIsModalOpen(false);
@@ -401,7 +450,12 @@ export default function Transacoes() {
         onCloseAction={handleDeleteClose}
         onSubmitAction={handleCloseDeleteSubmit}
       />
-      
+      <CardTCF
+        title="Resumo das Transações"
+        body={
+          <TransacoesGraficos token={token} clientId={userId} />
+        }
+      />
       <ModalUploadTransacoes
         isOpen={isModalUploadOpen}
         body={<p>Conteúdo do modal centralizado e responsivo</p>}
