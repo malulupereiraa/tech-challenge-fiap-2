@@ -7,11 +7,12 @@ services:
       - REMOTE_NEXT_APP_URL=http://localhost:3002
       - NEXTAUTH_URL=http://api:5000
       - NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:5000
+      - NEXTAUTH_SECRET=VIjyEWwIVtKO5dtWjtIAb8U40yCzp3nskQCKEQAcJg4=
   mfe:
     build: ./mfe
     ports:
       - "3002:3002"
   api:
-    build: ./back-tech-challenge-2
+    build: ./api
     ports:
       - "5000:5000"

@@ -122,17 +122,23 @@ const importTransactions = async (req, res) => {
       .pipe(csv())
       .on('data', (data) => results.push(data))
       .on('end', () => {
-        results.forEach((transactionData) => {
-          const transaction = new Transaction({
-            user: userId,
-            amount: transactionData.valor,
-            transactionType: transactionData.tipo_de_transacao?.toLowerCase(),
-            description: transactionData.descricao,
-            date: transactionData.data
-          });
+        try {
+          results.forEach((transactionData) => {
+            const dateParts = transactionData['Data Transacao'].split('/');
+            const date = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
 
-          transaction.save();
-        });
+            const transaction = new Transaction({
+              user: userId,
+              amount: transactionData['Valor']?.replace(".", "")?.replace(",", "."),
+              transactionType: transactionData['Tipo Transacao']?.toLowerCase(),
+              date
+            });
+
+            transaction.save();
+          });
+        } catch (error) {
+          console.log(error);
+        }
       });
 
     res.status(201).json({
