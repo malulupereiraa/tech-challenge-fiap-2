@@ -14,11 +14,13 @@ import ModalTCF from "../../@core/components/ui/Modal";
 import ButtonTCF from "../../@core/components/ui/Button";
 import DatatableTCF from "../../@core/components/ui/Datatable";
 import TransacaoForm from "../../@core/components/forms/Transacao";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { jwtDecode } from "jwt-decode";
 import useAxiosAuth from "@/@core/hooks/useAxiosAuth";
 import transactionsService from "@/@core/services/api-node/transactions.service";
 import router from "next/router";
+import useTransactionsService from "@/@core/services/api-node/transactions.service";
+import ModalUploadTransacoes from "./modalUpload";
 import { useSelector } from "react-redux";
 
 export default function Transacoes() {
@@ -37,10 +39,20 @@ export default function Transacoes() {
   const [toastTitle, setToastTitle] = useState<string>("");
   const [dataToForm, setDataToForm] = useState<any>();
   const axiosHookHandler: any = useAxiosAuth();
+  const [isModalUploadOpen, setIsModalUploadOpen] = useState(false);
+
+  const { data: session } = useSession(); // os dados de sessão podem ser colocados no gerenciador de estados
   const { user } = useSelector((state: any) => state.user);
 
   const handleDeleteClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleModalUploadOpen = () => {
+    setIsModalUploadOpen(true);
+  }
+  const handleModalClose = () => {
+    setIsModalUploadOpen(false);
   };
 
   const handleCloseDeleteSubmit = async () => {
@@ -61,17 +73,6 @@ export default function Transacoes() {
         setLoading(true);
         setIsModalOpen(false);
       });
-    // await deleteTransaction(itemClickedCurrent.current).then(() => {
-    //   setShowToast(true);
-    //   setMessage("Transação Removida com Sucesso");
-    //   setIcon("success");
-    //   setToastTitle("Sucesso!");
-    //   setTimeout(() => {
-    //     setShowToast(false);
-    //   }, 3000);
-    //   setLoading(true);
-    //   setIsModalOpen(false);
-    // });
   };
 
   const handleTransacaoModal = async (
@@ -112,7 +113,7 @@ export default function Transacoes() {
         setIsModalTransacaoOpen(state);
         break;
     }
-  };
+  };  
 
   const handleShowDelete = (itemClicked: any) => {
     setIsModalOpen(true);
@@ -312,48 +313,14 @@ export default function Transacoes() {
     }
   }, [user]);
 
-  // CODIGO DA FASE 1 - PARA EFEITO COMPARATIVO
-  // const fetchTransactions = async () => {
-  //   try {
-  //     await listTransactions()
-  //       .then((res: any) => {
-  //         const options: any = {
-  //           weekday: "long",
-  //           year: "numeric",
-  //           month: "long",
-  //           day: "numeric",
-  //           hour: "numeric",
-  //           minute: "numeric",
-  //           second: "numeric",
-  //         };
-  //         const transacoesToTable = res.map((item: any) => {
-  //           return {
-  //             ...item,
-  //             amount: item.transactionType == "deposito" ? item.amount : item.amount * -1,
-  //             transaction: transactionTypeDictionary.get(item.transactionType),
-  //             date: new Date(item.date).toLocaleDateString("pt-br", options),
-  //           };
-  //         });
-  //         setTransactions(transacoesToTable);
-  //         setLoading(false);
-  //       })
-  //       .catch((error: any) => {
-  //         setShowToast(true);
-  //         setMessage(error);
-  //         setIcon("error");
-  //         setToastTitle("Erro!");
-  //         setTimeout(() => {
-  //           setShowToast(false);
-  //         }, 3000);
-  //         console.error(error);
-  //         setLoading(false);
-  //       });
-  //   } catch (err: any) {
-  //     <ToastTCF icon="error" message={err} title="Erro!" />;
-  //     console.error(err);
-  //     setLoading(false);
-  //   }
-  // };
+   const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = `files/modelo-transacao.csv`;
+    link.download = 'modelo-transacao.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const columns: GridColDef[] = [
     {
@@ -413,6 +380,8 @@ export default function Transacoes() {
             paginationModel={paginationModel}
             loading={loading}
             functionSubmit={handleTransacaoForm}
+            functionHandleDownload={handleDownload}
+            functionHandleModalOpen={handleModalUploadOpen}
             functionHandleModal={handleTransacaoModal}
             isModalOpen={isModalTransacaoOpen}
             modalTitle={modalTitle}
@@ -432,6 +401,16 @@ export default function Transacoes() {
         onCloseAction={handleDeleteClose}
         onSubmitAction={handleCloseDeleteSubmit}
       />
+      
+      <ModalUploadTransacoes
+        isOpen={isModalUploadOpen}
+        body={<p>Conteúdo do modal centralizado e responsivo</p>}
+        center={true}
+        type={'home-modal'}
+        hasFooter={true}
+        onCloseAction={handleModalClose}
+        onSubmitAction={fetchTransactions}
+      />
     </>
   );
 }
@@ -445,8 +424,24 @@ export function ListagemComponent(props: any) {
           sm={12}
           md={12}
           lg={12}
-          className="d-flex justify-content-end mb-3"
+          className="d-flex d-md-flex justify-content-end gap-3 mb-3"
         >
+          <ButtonTCF
+            variant={"primary"}
+            label={"Baixar Template"}
+            disabled={false}
+            size={"sm"}
+            onClick={() =>props.functionHandleDownload()}
+          />
+
+          <ButtonTCF
+            variant="green"
+            label="Transações em Lote"
+            disabled={false}
+            size="sm"
+            onClick={props.functionHandleModalOpen}
+          />
+
           <ButtonTCF
             variant={"green"}
             label={"Nova Transação"}
